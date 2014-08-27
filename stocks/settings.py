@@ -37,6 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'ticker',
     'visual',
+    'south',
+    'django_cron',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -48,6 +50,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+CRON_CLASSES = [
+    "ticker.cron.PullQuotes"
+]
+
 ROOT_URLCONF = 'stocks.urls'
 
 WSGI_APPLICATION = 'stocks.wsgi.application'
@@ -58,8 +64,12 @@ WSGI_APPLICATION = 'stocks.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_stocks_db',
+        'USER': 'root',
+        'PASSWORD': 'Yutolove11',
     }
 }
 

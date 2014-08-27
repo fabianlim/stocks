@@ -47,7 +47,7 @@ def visual(request, qtext):
 
     if quote.count > 0:
         # will create the entries
-        tick = Ticker.query_to_models(qtext, quote.results)
+        tick = Ticker.query_to_models(qtext, quote.results, Quote)
 
         # get the plot (in string format)
         plt_str = tick.plot()

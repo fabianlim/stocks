@@ -58,3 +58,19 @@ class QueryInterface(object):
                 """.format(symbol, startDate, endDate)
             print e
 
+    # method to pull tickers
+    # right now this is hard coded to YQL
+    @staticmethod
+    def query_tickers():
+        try:
+            yql_query = """SELECT * FROM
+                yahoo.finance.industry
+                WHERE id IN
+                (SELECT industry.id FROM
+                yahoo.finance.sectors)"""
+            # each row is an industry's worth of tickers
+            return run_public_datatables_query(yql_query).rows
+        except YQLError as e:
+            print e
+
+

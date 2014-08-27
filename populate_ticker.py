@@ -2,14 +2,17 @@ import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stocks.settings')
 
 from django.db import models
-from ticker.models import Ticker, Quote
+from ticker.models import Ticker, Quote, Historical
 
 import datetime
 
 def sparse_entries():
 # main will not really run because of paths problems
 # add the ticker
-    tick =Ticker.objects.get_or_create(name="GOOG")[0]
+    tick =Ticker.objects.get_or_create(symbol="GOOG",
+            name="Google Inc",
+            industry="internet",
+            industry_id=100)[0]
 
     print tick.id
     print Ticker.objects.all()
@@ -34,15 +37,35 @@ def sparse_entries():
             ask=583)
 
     print tick.quote_set.all() # get allthe quotes with ticker=tick
-    print Quote.objects.filter(ticker__name='GOOG') # ticker is Foreign key here
+    print Quote.objects.filter(ticker__symbol='GOOG') # ticker is Foreign key here
     print Quote.objects.filter(date__day=25)
 
 def historic_entries():
-    tick = Ticker.objects.get(name='GOOG')
+    tick = Ticker.objects.get(symbol='GOOG')
     from ticker.query import QueryInterface
     query_results = QueryInterface.query_historicaldata("*", "GOOG")
-    Ticker.query_to_models('GOOG', query_results.results)
+    Ticker.query_to_models('GOOG', query_results.results, model=Historical)
+
+def ticker_entries():
+    from ticker.query import QueryInterface
+    # this gets tickers by industry
+    ticks_by_industry = QueryInterface.query_tickers()
+    for industry in ticks_by_industry:
+        if 'company' in industry.keys():
+            for entry in industry['company']:
+                try:
+                    Ticker.objects.get_or_create(symbol=entry['symbol'],
+                            name=entry['name'],
+                            industry=industry['name'],
+                            industry_id=industry['id'])
+                except Exception as e:
+                    print e
+            print """Added {} entries
+                in industry {}""".format(len(industry['company']),
+                        industry['name'])
+
 
 if __name__ == '__main__':
-     sparse_entries()
-    #historic_entries()
+    # sparse_entries()
+    # historic_entries()
+    ticker_entries()
