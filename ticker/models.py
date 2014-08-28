@@ -99,14 +99,49 @@ class Quote(StockRecord):
     date = models.DateField(verbose_name='LastTradeDate')
     time = models.TimeField(verbose_name='LastTradeTime')
 
-    change = models.FloatField(verbose_name='Change')
-    change_realtime = models.FloatField(verbose_name='ChangeRealtime',
-            default=0.0)
-    ask    = models.FloatField(verbose_name='Ask') # maybe should use Decimal
-    volume = models.IntegerField(verbose_name='Volume',
-            default=0)
-    last_trade_price = models.FloatField(verbose_name='LastTradePriceOnly',
-            default=0.00)
+    annual_gain = models.FloatField(verbose_name='AnnualizedGain', default=0)
+    book_value = models.FloatField(verbose_name='BookValue', default=0)
+
+    change = models.FloatField(verbose_name='Change', default=0)
+    change_inpercent = models.FloatField(verbose_name='ChangeinPercent', default=0)
+
+    dividend_share = models.FloatField(verbose_name='DividendShare', default=0)
+    dividend_yield = models.FloatField(verbose_name='DividendYield', default=0)
+
+    ebitda = models.IntegerField(verbose_name='EBITDA', default=0)
+    eps_est_current_year = models.FloatField(verbose_name='EPSEstimateCurrentYear', default=0)
+    eps_est_next_quarter = models.FloatField(verbose_name='EPSEstimateNextQuarter', default=0)
+    eps_est_next_year = models.FloatField(verbose_name='EPSEstimateNextYear', default=0)
+    earnings_share = models.FloatField(verbose_name='EarningsShare', default=0)
+
+    fifty_day_MA = models.FloatField(verbose_name='FiftydayMovingAverage', default=0)
+
+    market_cap = models.IntegerField(verbose_name='MarketCapitalization', default=0)
+
+    oneyr_target_price = models.FloatField(verbose_name='OneyrTargetPrice', default=0)
+
+    peg_ratio = models.FloatField(verbose_name='PEGRatio', default=0)
+    pe_ratio = models.FloatField(verbose_name='PERatio', default=0)
+
+    percent_change_from_year_high = models.FloatField(verbose_name='PercebtChangeFromYearHigh', default=0)
+    percent_change = models.FloatField(verbose_name='PercentChange', default=0)
+    percent_change_fifty_MA = models.FloatField(verbose_name='PercentChangeFromFiftydayMovingAverage', default=0)
+    percent_change_TwoHund_MA = models.FloatField(verbose_name='PercentChangeFromTwoHundreddayMovingAverage', default=0)
+    percent_change_from_year_low = models.FloatField(verbose_name='PercentChangeFromYearLow', default=0)
+
+    price_book = models.FloatField(verbose_name='PriceBook', default=0)
+    price_eps_est_current_year = models.FloatField(verbose_name='PriceEPSEstimateCurrentYear', default=0)
+    price_eps_est_next_year = models.FloatField(verbose_name='PriceEPSEstimateNextYear', default=0)
+    price_sales = models.FloatField(verbose_name='PriceSales', default=0)
+
+    TwoHund_MA = models.FloatField(verbose_name='TwoHundreddayMovingAverage', default=0)
+
+    volume = models.IntegerField(verbose_name='Volume', default=0)
+    year_high = models.FloatField(verbose_name='YearHigh', default=0)
+    year_low = models.FloatField(verbose_name='YearLow', default=0)
+
+    last_trade_price = models.FloatField(verbose_name='LastTradePriceOnly', default=0)
+
     #open   = models.DecimalField(max_digits=6,
     #            decimal_places=2,
     #            verbose_name='Open')
