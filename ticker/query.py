@@ -63,11 +63,13 @@ class QueryInterface(object):
     @staticmethod
     def query_tickers():
         try:
-            yql_query = """SELECT * FROM
+            yql_query = """SELECT company, name, id FROM
                 yahoo.finance.industry
-                WHERE id IN
+                WHERE (id IN
                 (SELECT industry.id FROM
-                yahoo.finance.sectors)"""
+                yahoo.finance.sectors))
+                AND company.symbol LIKE '%.SI'
+                """
             # each row is an industry's worth of tickers
             return run_public_datatables_query(yql_query).rows
         except YQLError as e:

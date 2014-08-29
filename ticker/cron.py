@@ -2,14 +2,13 @@ from django_cron import CronJobBase, Schedule
 from ticker.query import QueryInterface
 from ticker.models import Ticker, Quote
 
+from populate_ticker import pull_sg_quotes
 class PullQuotes(CronJobBase):
-    RUN_EVERY_MINS = 10 # every 10 mins
+    RUN_EVERY_MINS = 1 # every 10 mins
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'visual.pull_query'    # a unique code
 
     def do(self):
-        ticker = 'S68.SI' #singapore exchange
-        q = QueryInterface.query_quote(','.join(Quote.get_fields()), ticker)
-        Ticker.query_to_models(ticker, q.results, Quote)
+        pull_sq_quotes()
 

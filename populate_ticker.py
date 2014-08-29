@@ -50,9 +50,15 @@ def ticker_entries():
     from ticker.query import QueryInterface
     # this gets tickers by industry
     ticks_by_industry = QueryInterface.query_tickers()
+    #import pdb
+    #pdb.set_trace()
     for industry in ticks_by_industry:
         if 'company' in industry.keys():
-            for entry in industry['company']:
+            companies = industry['company']
+            if not isinstance(companies, list):
+                companies = [companies]
+            print companies
+            for entry in companies:
                 try:
                     Ticker.objects.get_or_create(symbol=entry['symbol'],
                             name=entry['name'],
@@ -64,8 +70,38 @@ def ticker_entries():
                 in industry {}""".format(len(industry['company']),
                         industry['name'])
 
+def add_sg_quote():
+    from ticker.query import QueryInterface
+    from ticker.models import Ticker, Quote
+    ticker = 'S68.SI' #singapore exchange
+    t = Ticker.objects.get_or_create(symbol=ticker,
+            name="Google Inc",
+            industry="internet",
+            industry_id=100)
+    Quote.objects.all().delete()
+    q = QueryInterface.query_quote(','.join(Quote.get_fields()), ticker)
+    Ticker.query_to_models(ticker, q.results, Quote)
+
+def pull_sg_quotes():
+    from ticker.query import QueryInterface
+    for t in Ticker.objects.filter(symbol__contains='.SI').all():
+        q = QueryInterface.query_quote(','.join(Quote.get_fields()), t.symbol)
+        try:
+            Ticker.query_to_models(t.symbol, q.results, Quote)
+        except Exception as e:
+            print "{} : exception {}".format(t.symbol, e)
 
 if __name__ == '__main__':
     # sparse_entries()
     # historic_entries()
     ticker_entries()
+    #add_sg_quote()
+
+    #t= Ticker.objects.get()
+    #print t.quote_set.get().change_inpercent
+    #print t.quote_set.get().market_cap
+
+    #from ticker.query import QueryInterface
+    #print t
+
+    #pull_sg_quotes()
