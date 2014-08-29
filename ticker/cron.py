@@ -10,5 +10,5 @@ class PullQuotes(CronJobBase):
     code = 'visual.pull_query'    # a unique code
 
     def do(self):
-        pull_sq_quotes()
+        pull_sg_quotes()
 
