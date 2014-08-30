@@ -115,7 +115,7 @@ if __name__ == '__main__':
          'ticker_entries' : ticker_entries,
           'add_sg_quote' : add_sg_quote,
           'pull_sg_quotes' : pull_sg_quotes,
-          'top_5_most_quotes': top_five_most_quotes}
+          'top_five_most_quotes': top_five_most_quotes}
 
     import argparse
 
