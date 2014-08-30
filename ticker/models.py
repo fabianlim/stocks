@@ -95,7 +95,6 @@ class StockRecord(models.Model):
         return cls._parse_query_result(cls._meta.fields, cls._dateformat, d)
 
 from ticker.fields import PercentField, BigFloatField
-
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^ticker\.fields\.FloatWithModifierField"])
 add_introspection_rules([], ["^ticker\.fields\.PercentField"])
@@ -103,8 +102,11 @@ add_introspection_rules([], ["^ticker\.fields\.BigFloatField"])
 
 class Quote(StockRecord):
     ticker = models.ForeignKey(Ticker)
-    date = models.DateField(verbose_name='LastTradeDate')
-    time = models.TimeField(verbose_name='LastTradeTime')
+    last_trade_date = models.DateField(verbose_name='LastTradeDate', null=True)
+    last_trade_time = models.TimeField(verbose_name='LastTradeTime', null=True)
+
+    date = models.DateField(auto_now_add=True, verbose_name='Date')
+    time = models.TimeField(auto_now_add=True, verbose_name='Time')
 
     annual_gain = models.FloatField(verbose_name='AnnualizedGain', null=True)
     book_value = models.FloatField(verbose_name='BookValue', null=True)
