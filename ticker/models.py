@@ -44,12 +44,15 @@ class Ticker(models.Model):
     def query_to_models(ticker_name, query_result, model):
         # this returns a tuple, so need to index first elem
         tick = Ticker.objects.get_or_create(symbol=ticker_name)[0]
+        print tick
 
         # query_result is a dict with keys according to field.name
         for q in query_result:
             parsed = model.parse_query_result(q)
+            print "parsed"
             try:
-                model.objects.get_or_create(ticker=tick, **parsed)
+                #model.objects.get_or_create(ticker=tick, **parsed)
+                model.objects.create(ticker=tick, **parsed)
             except Exception as e:
                 print """add quote {} failed:
                     parsed as {}""".format(q, parsed)
