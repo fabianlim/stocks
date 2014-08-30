@@ -117,7 +117,6 @@ class Quote(StockRecord):
 
     fifty_day_MA = models.FloatField(verbose_name='FiftydayMovingAverage', null=True)
 
-
     oneyr_target_price = models.FloatField(verbose_name='OneyrTargetPrice', null=True)
 
     peg_ratio = models.FloatField(verbose_name='PEGRatio', null=True)
@@ -147,7 +146,7 @@ class Quote(StockRecord):
     _dateformat = '%m/%d/%Y'
 
     def __unicode__(self):
-        return self.time.strftime('%H:%M:%S') + ' ' + self.date.strftime('%Y-%m-%d')
+        return self.ticker.name + ' ' + self.time.strftime('%H:%M:%S') + ' ' + self.date.strftime('%Y-%m-%d')
 
 """add quote {u'Volume': u'984100', u'Symbol': u'GOOG', u'Adj_Close': u'590.60', u'High': u'592.50', u'Low': u'584.75', u'Date': u'2014-07-28', u'Close': u'590.60', u'Open': u'588.07'} failed:
 """
@@ -168,5 +167,5 @@ class Historical(StockRecord):
     _dateformat = '%Y-%m-%d'
 
     def __unicode__(self):
-        return self.ticker__name + ' ' + self.date.strftime('%Y-%m-%d')
+        return self.ticker.name + ' ' + self.date.strftime('%Y-%m-%d')
 

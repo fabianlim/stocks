@@ -61,15 +61,18 @@ class QueryInterface(object):
     # method to pull tickers
     # right now this is hard coded to YQL
     @staticmethod
-    def query_tickers():
+    def query_tickers(company_filter_tag=None):
         try:
             yql_query = """SELECT company, name, id FROM
                 yahoo.finance.industry
                 WHERE (id IN
                 (SELECT industry.id FROM
                 yahoo.finance.sectors))
-                AND company.symbol LIKE '%.SI'
                 """
+            # add filter tag if present
+            if company_filter_tag and isinstance(filter_tag, basestring):
+                yql_query += " AND company.symbol LIKE '{}'".format(filter_tag)
+
             # each row is an industry's worth of tickers
             return run_public_datatables_query(yql_query).rows
         except YQLError as e:

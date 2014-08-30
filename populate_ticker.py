@@ -2,7 +2,9 @@ import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stocks.settings')
 
 from django.db import models
+
 from ticker.models import Ticker, Quote, Historical
+from ticker.query import QueryInterface
 
 import datetime
 
@@ -40,24 +42,30 @@ def sparse_entries():
     print Quote.objects.filter(ticker__symbol='GOOG') # ticker is Foreign key here
     print Quote.objects.filter(date__day=25)
 
+# add some historic entries to 'GOOG' ticker
 def historic_entries():
     tick = Ticker.objects.get(symbol='GOOG')
-    from ticker.query import QueryInterface
     query_results = QueryInterface.query_historicaldata("*", "GOOG")
     Ticker.query_to_models('GOOG', query_results.results, model=Historical)
 
-def ticker_entries():
-    from ticker.query import QueryInterface
-    # this gets tickers by industry
-    ticks_by_industry = QueryInterface.query_tickers()
-    #import pdb
-    #pdb.set_trace()
+# download all tickers
+def ticker_entries(company_filter_tag=None):
+    # filter with tag (if provided)
+    ticks_by_industry = QueryInterface.query_tickers(company_filter_tag)
+    # ticks_by_industry will be a list of dictionaries
+    # each dictionary (industry) will have keys
+    # company:
+    # name:
+    # id:
     for industry in ticks_by_industry:
+        # if a valid dict with comapies
         if 'company' in industry.keys():
+            # should be a list of companies
             companies = industry['company']
+            # if a singleton need to make a list
             if not isinstance(companies, list):
                 companies = [companies]
-            print companies
+            # iterate through, each entry is a company
             for entry in companies:
                 try:
                     Ticker.objects.get_or_create(symbol=entry['symbol'],
@@ -70,20 +78,24 @@ def ticker_entries():
                 in industry {}""".format(len(industry['company']),
                         industry['name'])
 
+# add an arbitrary SG quote for testing
 def add_sg_quote():
-    from ticker.query import QueryInterface
-    from ticker.models import Ticker, Quote
+
+    # add an arbitrary SG ticker
     ticker = 'S68.SI' #singapore exchange
     t = Ticker.objects.get_or_create(symbol=ticker,
             name="Google Inc",
             industry="internet",
             industry_id=100)
+
+    # clear all the existing quotes
     Quote.objects.all().delete()
     q = QueryInterface.query_quote(','.join(Quote.get_fields()), ticker)
     Ticker.query_to_models(ticker, q.results, Quote)
 
+# search through all tickers in SG market and pull them off the web
 def pull_sg_quotes():
-    from ticker.query import QueryInterface
+    # go for SG tickers
     for t in Ticker.objects.filter(symbol__contains='.SI').all():
         q = QueryInterface.query_quote(','.join(Quote.get_fields()), t.symbol)
         try:
@@ -91,17 +103,28 @@ def pull_sg_quotes():
         except Exception as e:
             print "{} : exception {}".format(t.symbol, e)
 
+# print the top 5 tickers with the most quotes
+def top_five_most_quotes():
+    for ticker in sorted([(len(t.quote_set.all()), t) for t in Ticker.objects.all()],
+            reverse=True)[:5]:
+        print ticker[1].quote_set.all()
+
 if __name__ == '__main__':
-    # sparse_entries()
-    # historic_entries()
-    ticker_entries()
-    #add_sg_quote()
+    funcs = {'sparse_entries': sparse_entries,
+         'historic_entries': historic_entries,
+         'ticker_entries' : ticker_entries,
+          'add_sg_quote' : add_sg_quote,
+          'pull_sg_quotes' : pull_sg_quotes,
+          'top_5_most_quotes': top_five_most_quotes}
 
-    #t= Ticker.objects.get()
-    #print t.quote_set.get().change_inpercent
-    #print t.quote_set.get().market_cap
+    import argparse
 
-    #from ticker.query import QueryInterface
-    #print t
+    parser = argparse.ArgumentParser(description='helper scripts ... etc...')
+    parser.add_argument('fname', nargs='+', help='name of function to call')
+    parser.add_argument('argv1', nargs='?', help='extra argument to function')
+    args = parser.parse_args()
 
-    #pull_sg_quotes()
+    # call the function
+    funcs[args.fname]()
+
+
