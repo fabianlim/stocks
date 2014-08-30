@@ -6,4 +6,4 @@
 *.pyc
 local_settings.py
 mysql2pgsql.yml
-ticker/migrations/*.*
+#ticker/migrations/*.*
