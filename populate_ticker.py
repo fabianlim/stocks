@@ -101,7 +101,7 @@ def pull_sg_quotes():
         q = QueryInterface.query_quote(','.join(Quote.get_fields()), t.symbol)
         try:
             Ticker.query_to_models(t.symbol, q.results, Quote)
-            print "{}: quote {}:{} successfull added!".format(t.symbol
+            print "{}: quote {}:{} successfull added!".format(t.symbol,
                     q.date,
                     q.time)
         except Exception as e:
