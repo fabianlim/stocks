@@ -78,4 +78,13 @@ class QueryInterface(object):
         except YQLError as e:
             print e
 
+    # returns the date and time
+    # input is a dictionary of results
+    @staticmethod
+    def time_stamp(results):
+        from django.utils import timezone
+        now=timezone.now()
+        for r in results:
+            r['date'] = now.date() # will timestamp with server time
+            r['time'] = now.time()
 
