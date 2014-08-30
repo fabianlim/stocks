@@ -67,6 +67,7 @@ def ticker_entries(company_filter_tag=None):
                 companies = [companies]
             # iterate through, each entry is a company
             for entry in companies:
+                print entry
                 try:
                     Ticker.objects.get_or_create(symbol=entry['symbol'],
                             name=entry['name'],
@@ -120,11 +121,15 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description='helper scripts ... etc...')
-    parser.add_argument('fname', nargs='+', help='name of function to call')
+    parser.add_argument('fname', help='name of function to call')
     parser.add_argument('argv1', nargs='?', help='extra argument to function')
     args = parser.parse_args()
 
     # call the function
-    funcs[args.fname[0]]()
+    if args.argv1:
+        funcs[args.fname](args.argv1)
+    else:
+        funcs[args.fname]()
+
 
 

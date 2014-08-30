@@ -70,8 +70,8 @@ class QueryInterface(object):
                 yahoo.finance.sectors))
                 """
             # add filter tag if present
-            if company_filter_tag and isinstance(filter_tag, basestring):
-                yql_query += " AND company.symbol LIKE '{}'".format(filter_tag)
+            if company_filter_tag and isinstance(company_filter_tag, basestring):
+                yql_query += " AND company.symbol LIKE '{}'".format(company_filter_tag)
 
             # each row is an industry's worth of tickers
             return run_public_datatables_query(yql_query).rows
