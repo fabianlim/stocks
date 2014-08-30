@@ -125,6 +125,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # call the function
-    funcs[args.fname]()
+    funcs[args.fname[0]]()
 
 
