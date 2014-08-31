@@ -82,7 +82,6 @@ class QueryInterface(object):
     # input is a dictionary of results
     @staticmethod
     def time_stamp(results):
-        from django.utils import timezone
         now=timezone.now()
         for r in results:
             r['date'] = now.date() # will timestamp with server time

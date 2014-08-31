@@ -6,4 +6,10 @@
 *.pyc
 local_settings.py
 mysql2pgsql.yml
-#ticker/migrations/*.*
+
+### migration data ###
+ticker/migrations/*.*
+
+### csv ###
+csv/*.*
+
