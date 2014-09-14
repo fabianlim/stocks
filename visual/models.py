@@ -3,22 +3,24 @@ import datetime
 from django.utils import timezone
 
 # Create your models here.
-class Session(models.Model):
-    session_datetime = models.DateTimeField('datetime started')
+#class Session(models.Model):
+#    session_datetime = models.DateTimeField('datetime started')
+#
+#    def numSearches(self):
+#        return self.query_set.count()
+#
+#    def was_recent(self):
+#        return self.session_datetime >= timezone.now() - datetime.timedelta(days=1)
+#
+#    def __unicode__(self):
+#        return self.session_datetime.strftime('%m/%d/%Y %I:%M %p')
 
-    def numQueries(self):
-        return self.query_set.count()
-
-    def was_recent(self):
-        return self.session_datetime >= timezone.now() - datetime.timedelta(days=1)
-
-    def __unicode__(self):
-        return self.session_datetime.strftime('%m/%d/%Y %I:%M %p')
-
-class Query(models.Model):
-    session = models.ForeignKey(Session)
+class Search(models.Model):
+    #session = models.ForeignKey(Session)
+    datetime = models.DateTimeField('datetime started')
     text = models.CharField(max_length=200)
 
     def __unicode__(self):
-        return self.text
+        #return self.text
+        return self.datetime.strftime('%m/%d/%Y %I:%M %p') + ": " + self.text
 

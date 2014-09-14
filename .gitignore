@@ -11,5 +11,5 @@ mysql2pgsql.yml
 ticker/migrations/*.*
 
 ### csv ###
-csv/*.*
+**/*.csv
 

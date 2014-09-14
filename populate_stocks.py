@@ -28,12 +28,12 @@ def add_session(datetime):
     return s
 
 def add_query(session,text):
-    q = Query.objects.get_or_create(session=session,text=text)[0]
+    q = Search.objects.get_or_create(session=session,text=text)[0]
     return q
 
 # Start execution here!
 if __name__ == '__main__':
     print "Starting Visual population script..."
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stocks.settings')
-    from visual.models import Session, Query
+    from visual.models import Session, Search
     populate()

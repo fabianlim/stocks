@@ -117,8 +117,8 @@ def top_five_most_quotes():
 
 if __name__ == '__main__':
     funcs = {'sparse_entries': sparse_entries,
-         'historic_entries': historic_entries,
-         'ticker_entries' : ticker_entries,
+          'historic_entries': historic_entries,
+          'ticker_entries' : ticker_entries,
           'add_sg_quote' : add_sg_quote,
           'pull_sg_quotes' : pull_sg_quotes,
           'top_five_most_quotes': top_five_most_quotes}

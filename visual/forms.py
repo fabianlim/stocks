@@ -1,12 +1,12 @@
 from django import forms
 from django.utils import timezone
-from visual.models import Session
+from visual.models import Search
 
-class SessionForm(forms.ModelForm):
+class SearchForm(forms.ModelForm):
 
-    session_datetime = forms.DateTimeField(initial = timezone.now,
+    datetime = forms.DateTimeField(initial = timezone.now,
             widget=forms.DateTimeInput(attrs={'style': 'display:none;'}))
-    query = forms.CharField(max_length=1000, help_text="Enter your query")
+    text = forms.CharField(max_length=200, help_text="Search")
 
     class Meta:
-        model = Session
+        model = Search

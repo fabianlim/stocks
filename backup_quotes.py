@@ -31,16 +31,20 @@ def run_heroku_sql(cmd):
            cmd])
 
 if is_heroku_db_full():
+
+    # I should put this somewhere in settings
+    csv_dir = 'csv_data'
+
     # this is the datetime
     dt = run_heroku_sql('SELECT MIN(date+time),MAX(date+time) FROM ticker_quote CSV')
     dt = dt.split("\n")[2].replace(' ', '_')
     dt = dt.replace('|', '')
 
-    print "exporting csv in csv/ directory"
+    print "exporting csv in {}/ directory".format(csv_dir)
     run_heroku_sql(
           """\copy (SELECT * FROM ticker_ticker, ticker_quote WHERE
           ticker_ticker.id=ticker_quote.ticker_id ORDER BY ticker_ticker.name) TO
-          csv/heroku_{}.csv CSV HEADER DELIMITER ','""".format(dt) )
+          {}/heroku_{}.csv CSV HEADER DELIMITER ','""".format(csv_dir, dt) )
 
     print "deleting quote entries"
     run_heroku_sql('DELETE FROM ticker_quote')
