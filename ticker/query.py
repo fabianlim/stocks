@@ -8,13 +8,10 @@ from datetime import timedelta
 
 class QueryInterface(object):
 
-    """ now this is hard linked to yql but can be made more general
-     of course
-     also now it returns a YQLObject. In the future we will have it
-     with the following API
-     count : the number of results
-     quote : dictionary """
-
+    """ now this only queries Yahoo (using yql) but can be made more general
+     in the future.
+     It returns a pandas dataframe
+   """
     class QueryObject(object):
         def __init__(self, results):
             self.count = len(results)
@@ -22,6 +19,7 @@ class QueryInterface(object):
 
     # method to pull from quotes
     # right now this is hard coded to YQL
+    #TODO: not good way of handling spaces in "field" input
     @staticmethod
     def query_quote(fields, symbol):
         # query the quote
@@ -30,13 +28,15 @@ class QueryInterface(object):
                 yahoo.finance.quotes
                 where symbol='{}'""".format(fields.replace(' ', '_'), symbol)
 
-            return QueryInterface.QueryObject(run_public_datatables_query(yql_query).rows)
+            return QueryInterface.QueryObject(
+                run_public_datatables_query(yql_query).rows)
         except YQLError as e:
             print "Error: query_quote on symbol={}".format(symbol)
             print e
 
     # method to pull from historical data
     # right now this is hard coded to YQL
+    #TODO: not good way of handling spaces in "field" input
     @staticmethod
     def query_historicaldata(fields,
             symbol,
@@ -48,10 +48,12 @@ class QueryInterface(object):
                 where symbol='{}'
                 AND startDate='{}'
                 AND endDate='{}'
-                """.format(fields.replace(' ', '_'), symbol,
+                """.format(fields.replace(' ', '_'),
+                        symbol,
                         startDate, endDate)
 
-            return QueryInterface.QueryObject(run_public_datatables_query(yql_query).rows)
+            return QueryInterface.QueryObject(
+                run_public_datatables_query(yql_query).rows)
         except YQLError as e:
             print """Error: query_historicaldata on symbol={}
                 startDate={} and endDate={}

@@ -24,8 +24,6 @@ def prepare_numeric_matrix(df):
 
 # straightforwardly convert to a numeric matrix, removing NaNs
 def get_numeric_matrix(df):
-    #import pdb
-    #pdb.set_trace()
     df = df[df.isnull().sum(axis=1)==0] # drop rows with nan
     df = df.drop(['symbol','industry', 'industry_id'],axis=1)
     return df.as_matrix(), df.columns, df.reset_index()['name']
@@ -35,7 +33,7 @@ from numpy.linalg import svd
 # assume the long dimension of M is axis=0
 def ZCA_whitening(M):
     K = np.dot(np.transpose(M), M) / M.shape[0]
-    print K.shape
+    # print K.shape
     u,s,v = svd(K) #K is hermitian so this is really eigenvalue decomp
     return np.dot(
             np.dot(

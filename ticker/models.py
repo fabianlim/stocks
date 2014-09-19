@@ -1,30 +1,5 @@
 from django.db import models
 
-from matplotlib import pylab
-from pylab import *
-import PIL
-import PIL.Image
-import StringIO
-
-# sample view to plot a graph
-def dummpy_graph():
-    x = [1,2,3,4,5,6]
-    y = [5, 2, 6, 1, -1, 0]
-    plot(x,y, linewidth=2)
-
-    xlabel('x axis')
-    ylabel('y axis')
-    title('my graph')
-
-    buffer = StringIO.StringIO()
-    canvas = pylab.get_current_fig_manager().canvas
-    canvas.draw()
-    graphIMG = PIL.Image.frombytes("RGB", canvas.get_width_height(),
-            canvas.tostring_rgb())
-    graphIMG.save(buffer, 'PNG')
-    pylab.close()
-
-    return buffer.getvalue()
 
 # Create your models here.
 class Ticker(models.Model):
@@ -36,10 +11,13 @@ class Ticker(models.Model):
     def __unicode__(self):
         return self.name
 
-    # to go from yql to models
-    # the query_result is a dict with keys in the field.name
-    # format. This is necessary for the models get_or_create
-    # API
+    """
+    to parse the yql query_result into a format acceptable
+    by some django StockRecord model.
+    ticker_name: foreign key for the StockRecord
+    query_result: from the yql (or external DB query)
+    model: StockRecord model
+    """
     @staticmethod
     def query_to_models(ticker_name, query_result, model):
         # this returns a tuple, so need to index first elem
@@ -51,27 +29,19 @@ class Ticker(models.Model):
             try:
                 model.objects.create(ticker=tick, **parsed)
             except Exception as e:
-                print """add quote {} failed:
-                    parsed as {}""".format(q, parsed)
+                print """model {} add query {} failed:
+                    parsed as {}""".format(model, q, parsed)
                 print e
 
         return tick
 
-    # method to plot
-    def plot(self):
-        return dummpy_graph()
-
-# parent class for a single entry
+# parent class for a single record entry
 class StockRecord(models.Model):
     # have to use the _meta tag to get fields
     # returns the verbose names (database key names)
-    @staticmethod
-    def _get_fields():
-        return [f.verbose_name for f in Quote._meta.fields]
-
     @classmethod
     def get_fields(cls):
-        return cls._get_fields()
+        return [f.verbose_name for f in cls._meta.fields]
 
     # the query result passed in is a dictionary d
     # d.keyvalues() will be those used in the
@@ -95,6 +65,7 @@ class StockRecord(models.Model):
         return cls._parse_query_result(cls._meta.fields, cls._dateformat, d)
 
 from ticker.fields import PercentField, BigFloatField
+# for south migrations
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^ticker\.fields\.FloatWithModifierField"])
 add_introspection_rules([], ["^ticker\.fields\.PercentField"])
@@ -117,8 +88,10 @@ class Quote(StockRecord):
     dividend_share = models.FloatField(verbose_name='DividendShare', null=True)
     dividend_yield = models.FloatField(verbose_name='DividendYield', null=True)
 
-    eps_est_current_year = models.FloatField(verbose_name='EPSEstimateCurrentYear', null=True)
-    eps_est_next_quarter = models.FloatField(verbose_name='EPSEstimateNextQuarter', null=True)
+    eps_est_current_year = models.FloatField(verbose_name='EPSEstimateCurrentYear',
+            null=True)
+    eps_est_next_quarter = models.FloatField(verbose_name='EPSEstimateNextQuarter',
+            null=True)
     eps_est_next_year = models.FloatField(verbose_name='EPSEstimateNextYear', null=True)
     earnings_share = models.FloatField(verbose_name='EarningsShare', null=True)
 
@@ -131,15 +104,25 @@ class Quote(StockRecord):
 
     ebitda = BigFloatField(verbose_name='EBITDA', null=True)
     market_cap = BigFloatField(verbose_name='MarketCapitalization', null=True)
-    percent_change_from_year_high = PercentField(verbose_name='PercebtChangeFromYearHigh', null=True)
+    percent_change_from_year_high = (PercentField(
+        verbose_name='PercebtChangeFromYearHigh',
+        null=True))
     percent_change = PercentField(verbose_name='PercentChange', null=True)
-    percent_change_fifty_MA = PercentField(verbose_name='PercentChangeFromFiftydayMovingAverage', null=True)
-    percent_change_twohund_MA = PercentField(verbose_name='PercentChangeFromTwoHundreddayMovingAverage', null=True)
-    percent_change_from_year_low = PercentField(verbose_name='PercentChangeFromYearLow', null=True)
+    percent_change_fifty_MA = (PercentField(
+        verbose_name='PercentChangeFromFiftydayMovingAverage',
+        null=True))
+    percent_change_twohund_MA = (PercentField(
+        verbose_name='PercentChangeFromTwoHundreddayMovingAverage',
+        null=True))
+    percent_change_from_year_low = PercentField(verbose_name='PercentChangeFromYearLow',
+            null=True)
 
     price_book = models.FloatField(verbose_name='PriceBook', null=True)
-    price_eps_est_current_year = models.FloatField(verbose_name='PriceEPSEstimateCurrentYear', null=True)
-    price_eps_est_next_year = models.FloatField(verbose_name='PriceEPSEstimateNextYear', null=True)
+    price_eps_est_current_year = (models.
+            FloatField(verbose_name='PriceEPSEstimateCurrentYear',
+            null=True))
+    price_eps_est_next_year = models.FloatField(verbose_name='PriceEPSEstimateNextYear',
+            null=True)
     price_sales = models.FloatField(verbose_name='PriceSales', null=True)
 
     twohund_MA = models.FloatField(verbose_name='TwoHundreddayMovingAverage', null=True)
@@ -153,15 +136,20 @@ class Quote(StockRecord):
     _dateformat = '%m/%d/%Y'
 
     def __unicode__(self):
-        return self.ticker.name + ' ' + self.time.strftime('%H:%M:%S') + ' ' + self.date.strftime('%Y-%m-%d')
+        return (self.ticker.name +
+                ' ' +
+                self.time.strftime('%H:%M:%S') +
+                ' ' +
+                self.date.strftime('%Y-%m-%d'))
 
-"""add quote {u'Volume': u'984100', u'Symbol': u'GOOG', u'Adj_Close': u'590.60', u'High': u'592.50', u'Low': u'584.75', u'Date': u'2014-07-28', u'Close': u'590.60', u'Open': u'588.07'} failed:
-"""
+# class to store the historical record.
+# Not sure if we will be using this forward
 class Historical(StockRecord):
     ticker = models.ForeignKey(Ticker)
     date = models.DateField(verbose_name='Date')
 
-    volume = models.IntegerField(default=0)
+    volume = models.IntegerField(default=0,
+            verbose_name='Volume')
 
     open   = models.DecimalField(max_digits=6,
                 decimal_places=2,
