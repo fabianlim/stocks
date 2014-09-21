@@ -42,6 +42,8 @@ def get_ticker_figure(tick):
     #q = QueryInterface.query_historicaldata(','.join(Historical.get_fields()),
     q = QueryInterface.query_historicaldata("Volume,Open,Close,Date",
             tick.symbol)
+    import pickle
+    pickle.dump(q.results, file('query.p', 'wb'))
 
     fig = Figure()
     ax = fig.add_subplot(111, title="ticker {} historical data".format(tick.symbol))

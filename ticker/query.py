@@ -2,6 +2,10 @@
 
 from yql import YQLError
 from ticker.yahoo_query import run_public_datatables_query
+from ticker.models import get_dateformat
+from ticker.models import get_fields
+from ticker.models import get_field_verbose_names
+from ticker.models import parse_query_result
 
 from django.utils import timezone
 from datetime import timedelta
@@ -10,12 +14,26 @@ class QueryInterface(object):
 
     """ now this only queries Yahoo (using yql) but can be made more general
      in the future.
-     It returns a pandas dataframe
+     Returns a QueryObject
    """
     class QueryObject(object):
         def __init__(self, results):
             self.count = len(results)
             self.results = results
+
+        # convert QueryObject to specified model
+        def to_model(self, model, **kwargs):
+            # query_result is a dict with keys according to field.name
+            for q in self.results:
+                parsed = parse_query_result(q,
+                        get_fields(model),
+                        get_dateformat(model))
+                try:
+                    model.objects.create(**dict(kwargs, **parsed))
+                except Exception as e:
+                    print """model {} conversion{} failed:
+                        parsed as {}""".format(model, q, parsed)
+                    print e
 
     # method to pull from quotes
     # right now this is hard coded to YQL
@@ -72,8 +90,10 @@ class QueryInterface(object):
                 yahoo.finance.sectors))
                 """
             # add filter tag if present
-            if company_filter_tag and isinstance(company_filter_tag, basestring):
-                yql_query += " AND company.symbol LIKE '{}'".format(company_filter_tag)
+            if company_filter_tag and isinstance(company_filter_tag,
+                                                 basestring):
+                yql_query += " AND company.symbol LIKE '{}'".format(
+                    company_filter_tag)
 
             # each row is an industry's worth of tickers
             return run_public_datatables_query(yql_query).rows

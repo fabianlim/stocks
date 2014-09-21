@@ -39,7 +39,7 @@ def sparse_entries():
             ask=583)
 
     print tick.quote_set.all() # get allthe quotes with ticker=tick
-    print Quote.objects.filter(ticker__symbol='GOOG') # ticker is Foreign key here
+    print Quote.objects.filter(ticker__symbol='GOOG') # ticker is Foreign key
     print Quote.objects.filter(date__day=25)
 
 # add some historic entries to 'GOOG' ticker
@@ -79,28 +79,28 @@ def ticker_entries(company_filter_tag=None):
                 in industry {}""".format(len(industry['company']),
                         industry['name'])
 
+from ticker.models import get_field_verbose_names
+
 # add an arbitrary SG quote for testing
 def add_sg_quote():
 
     # add an arbitrary SG ticker
     ticker = 'S68.SI' #singapore exchange
-    t = Ticker.objects.get_or_create(symbol=ticker,
-            name="Google Inc",
-            industry="internet",
-            industry_id=100)
 
     # clear all the existing quotes
-    Quote.objects.all().delete()
-    q = QueryInterface.query_quote(','.join(Quote.get_fields()), ticker)
-    Ticker.query_to_models(ticker, q.results, Quote)
+    #Quote.objects.all().delete()
+    q = QueryInterface.query_quote(','.join(get_field_verbose_names(Quote)),
+            ticker)
+    Ticker.query_to_models(ticker, q, Quote)
 
 # search through all tickers in SG market and pull them off the web
 def pull_sg_quotes():
     # go for SG tickers
     for t in Ticker.objects.filter(symbol__contains='.SI').all():
-        q = QueryInterface.query_quote(','.join(Quote.get_fields()), t.symbol)
+        q = QueryInterface.query_quote(','.join(get_field_verbose_names(Quote)),
+                t.symbol)
         try:
-            Ticker.query_to_models(t.symbol, q.results, Quote)
+            Ticker.query_to_models(t.symbol, q, Quote)
             QueryInterface.time_stamp(q.results)
             print q.results[0]
             print "{}: quote D:{} T:{} successfull added!".format(t.symbol,
@@ -111,7 +111,8 @@ def pull_sg_quotes():
 
 # print the top 5 tickers with the most quotes
 def top_five_most_quotes():
-    for ticker in sorted([(len(t.quote_set.all()), t) for t in Ticker.objects.all()],
+    for ticker in sorted([(len(t.quote_set.all())
+                           , t) for t in Ticker.objects.all()],
             reverse=True)[:5]:
         print ticker[1].quote_set.all()
 
