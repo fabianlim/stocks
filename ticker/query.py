@@ -9,6 +9,10 @@ from ticker.models import parse_query_result
 from django.utils import timezone
 from datetime import timedelta
 
+import pandas as pd
+
+import json
+
 
 class QueryInterface(object):
 
@@ -17,17 +21,21 @@ class QueryInterface(object):
     in the future.
     Returns a QueryObject
     """
+
     class QueryObject(object):
+
         """
         query results packed into this object.
         to_model : helper function to store in Django model
         """
+
         def __init__(self, results):
             self.count = len(results)
             self.results = results
 
         def to_model(self, model, **kwargs):
             """ helper function to convert to Django model) """
+
             for q in self.results:
                 parsed = parse_query_result(q,
                                             get_fields(model),
@@ -39,13 +47,20 @@ class QueryInterface(object):
                         parsed as {}""".format(model, q, parsed)
                     print e
 
+        def to_pandas(self):
+            """ helper function to return a pandas dataframe """
+
+            return pd.read_json(json.load(self.results))
+
     @staticmethod
     def query_quote(fields, symbol):
+
         """
         method to pull from quotes
         right now this is hard coded to YQL
         """
         # TODO: not good way of handling spaces in "field" input?
+
         try:
             yql_query = """SELECT {} FROM
                 yahoo.finance.quotes

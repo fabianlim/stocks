@@ -74,11 +74,15 @@ def visualize_ticker(request, tick):
 
     # get the ticker figure
     fig = get_ticker_figure(tick)
+
     # get the figure canvas
     canvas = get_figure_canvas(fig)
+
     # get a image-type HttpResponse
     response = HttpResponse(content_type='image/png')
+
     # print the png to response
     canvas.print_png(response)
+
     # return ther response
     return response

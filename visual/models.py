@@ -17,6 +17,8 @@ from django.db import models
 
 
 class Search(models.Model):
+    """ Model that holds a search query """
+
     # session = models.ForeignKey(Session)
     datetime = models.DateTimeField('datetime started')
     text = models.CharField(max_length=200)
