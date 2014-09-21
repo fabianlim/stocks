@@ -2,6 +2,7 @@
 
 from django.db import models
 
+
 class PercentField(models.CharField):
 
     """ Field with a percentage modifier """
@@ -39,6 +40,7 @@ class BigFloatField(models.CharField):
             max_length=20))
         super(BigFloatField, self).__init__(*args, **kwargs)
 
+    # TODO can add more modifiers if needed
     _modifiers = ['K', 'M', 'B']
 
     def get_prep_value(self, value):

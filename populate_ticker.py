@@ -125,13 +125,36 @@ def top_five_most_quotes():
                          reverse=True)[:5]:
         print ticker[1].quote_set.all()
 
+
+def test_pandas():
+
+    ticker = 'S68.SI'  # singapore exchange
+
+    # q = QueryInterface.query_historicaldata("Volume,Open,Close,Date",
+    #                                         ticker)
+
+    # print q.to_pandas()
+
+    q = QueryInterface.query_quote(','.join(get_field_verbose_names(Quote)),
+                                   ticker)
+
+    # print q.to_pandas()
+
+    from ticker.models import get_fields
+    df = q.to_pandas()
+    for f in get_fields(Quote, name_filter_list=df.columns):
+        df[f.verbose_name] = df[f.verbose_name].map(lambda x: f.to_python(x))
+
+    print df
+
 if __name__ == '__main__':
     funcs = {'sparse_entries': sparse_entries,
              'historic_entries': historic_entries,
              'ticker_entries': ticker_entries,
              'add_sg_quote': add_sg_quote,
              'pull_sg_quotes': pull_sg_quotes,
-             'top_five_most_quotes': top_five_most_quotes}
+             'top_five_most_quotes': top_five_most_quotes,
+             'test_pandas': test_pandas}
 
     import argparse
 

@@ -38,7 +38,8 @@ class QueryInterface(object):
 
             for q in self.results:
                 parsed = parse_query_result(q,
-                                            get_fields(model),
+                                            get_fields(model,
+                                                       name_filter_list=q),
                                             get_dateformat(model))
                 try:
                     model.objects.create(**dict(kwargs, **parsed))
@@ -50,7 +51,7 @@ class QueryInterface(object):
         def to_pandas(self):
             """ helper function to return a pandas dataframe """
 
-            return pd.read_json(json.load(self.results))
+            return pd.read_json(json.dumps(self.results))
 
     @staticmethod
     def query_quote(fields, symbol):

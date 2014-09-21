@@ -4,7 +4,7 @@ import pickle
 
 
 def tidy_datetime(date, time):
-    """ create a date + time stamp """
+    """ create a date + time stamp by combining """
 
     # combine data + time.
     # drop the numbers after the '.' in the time field (if exists)

@@ -6,19 +6,23 @@ from ticker.fields import PercentField, BigFloatField
 
 # for south migrations
 from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^ticker\.fields\.FloatWithModifierField"])
 add_introspection_rules([], ["^ticker\.fields\.PercentField"])
 add_introspection_rules([], ["^ticker\.fields\.BigFloatField"])
 
 
-def get_fields(model):
+def get_fields(model, name_filter_list=None):
     """ helper function to return model fields """
-    return model._meta.fields
+    if name_filter_list is None:
+        return model._meta.fields
+    else:
+        return [f for f in get_fields(model) if
+                f.verbose_name in name_filter_list]
 
 
-def get_field_verbose_names(model):
+def get_field_verbose_names(model, name_filter_list=None):
     """ helper function to return model fields verbose names """
-    return [f.verbose_name for f in get_fields(model)]
+
+    return [f.verbose_name for f in get_fields(model, name_filter_list)]
 
 
 def get_dateformat(model):
@@ -72,13 +76,13 @@ def parse_query_result(d, fields, dateformat):
 
     p = dict()
     for f in fields:
-        if f.verbose_name in d:
-            # TODO : I should list out all the formats when I have time
-            if isinstance(f, models.DateField):
-                p[f.name] = datetime.datetime.strptime(d[f.verbose_name],
-                                                       dateformat)
-            else:
-                p[f.name] = d[f.verbose_name]
+        # TODO : I should list out all the formats when I have time
+        if isinstance(f, models.DateField):
+            p[f.name] = datetime.datetime.strptime(d[f.verbose_name],
+                                                   dateformat)
+        else:
+            p[f.name] = d[f.verbose_name]
+
     return p
 
 
