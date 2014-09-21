@@ -2,55 +2,63 @@
 
 from django.db import models
 
+class PercentField(models.CharField):
 
-class FloatWithModifierField(models.CharField):
-    """ Custom field to handle data with modifiers """
+    """ Field with a percentage modifier """
+
+    # need this to override get_prep_value and to_python
     __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
-        self.modifier = kwargs.pop('modifier')
-        super(FloatWithModifierField, self).__init__(*args, **kwargs)
-
-    def _decons(self, value):
-        # assert(value[-1] in self.modifier.keys())
-        if value[-1] not in self.modifier.keys():
-            raise KeyError
-        return float(value[:-1]), value[-1]  # may throw ValueError
+        # CharField need to specify max_length
+        kwargs.update(dict(
+            max_length=20))
+        super(PercentField, self).__init__(*args, **kwargs)
 
     def get_prep_value(self, value):
         if not value:
             return
-        if isinstance(value, tuple):
-            return value[1]
-        return value
+        return str(value * 100) + '%'
 
     def to_python(self, value):
         if not value:
             return
-        try:
-            num_val, unit = self._decons(value.strip())
-            return (self.modifier[unit](num_val), value)
-        except KeyError:
-            return (float(value), value)
+        return float(value.replace('%', "")) / 100
 
 
-class PercentField(FloatWithModifierField):
-    """ Field with a percentage modifier """
+class BigFloatField(models.CharField):
 
-    def __init__(self, *args, **kwargs):
-        kwargs.update(dict(
-            max_length=10,
-            modifier={'%': lambda x: x / 100.0}))
-        super(PercentField, self).__init__(*args, **kwargs)
+    """ Field with thousands, millions, billions ... modifiers """
 
-
-class BigFloatField(FloatWithModifierField):
-    """ Field with a thousands, millions, billions ... modifiers """
+    # need this to override get_prep_value and to_python
+    __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
+        # CharField need to specify max_length
         kwargs.update(dict(
-            max_length=20,
-            modifier={'B': lambda x: x * 1e9,
-                      'M': lambda x: x * 1e6,
-                      'K': lambda x: x * 1e3}))
+            max_length=20))
         super(BigFloatField, self).__init__(*args, **kwargs)
+
+    _modifiers = ['K', 'M', 'B']
+
+    def get_prep_value(self, value):
+        if not value:
+            return
+        for m in [''] + self._modifiers:
+            if value >= 1000.0:
+                value /= 1000.0
+            else:
+                return str(value) + m
+        return
+
+    def to_python(self, value):
+        if not value:
+            return
+        v = [(1e3**(i+1), m) for i, m in
+             enumerate(self._modifiers) if m in value]
+
+        if len(v) == 1:
+            e, m = v[0]
+            return float(value.replace(m, '')) * e
+        else:
+            return
