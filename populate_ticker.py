@@ -145,7 +145,7 @@ def test_pandas():
     for f in get_fields(Quote, name_filter_list=df.columns):
         df[f.verbose_name] = df[f.verbose_name].map(lambda x: f.to_python(x))
 
-    print df
+    print df['LastTradeDate']
 
 if __name__ == '__main__':
     funcs = {'sparse_entries': sparse_entries,

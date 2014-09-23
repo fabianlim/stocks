@@ -1,11 +1,10 @@
 from django.db import models
 
-import datetime
-
-from ticker.fields import PercentField, BigFloatField
+from ticker.fields import PercentField, BigFloatField, FormattedDateField
 
 # for south migrations
 from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^ticker\.fields\.FormattedDateField"])
 add_introspection_rules([], ["^ticker\.fields\.PercentField"])
 add_introspection_rules([], ["^ticker\.fields\.BigFloatField"])
 
@@ -23,11 +22,6 @@ def get_field_verbose_names(model, name_filter_list=None):
     """ helper function to return model fields verbose names """
 
     return [f.verbose_name for f in get_fields(model, name_filter_list)]
-
-
-def get_dateformat(model):
-    """ helper function to return datetime format """
-    return model._dateformat
 
 
 class Ticker(models.Model):
@@ -57,31 +51,27 @@ class Ticker(models.Model):
         query_result: from the yql (or external DB query)
         model: StockRecord model
         """
+
         # this returns a tuple, so need to index first elem
         tick = Ticker.objects.get_or_create(symbol=ticker_name)[0]
+
         # call the to_model method of Query object and link to ticker
         query.to_model(model, ticker=tick)
+
         # return tick
         return tick
 
 
-def parse_query_result(d, fields, dateformat):
+def parse_query_result(d, fields):
     """
     parse the query result into a dict
     dict is essentially the kwargs needed for model creation
     """
 
-    # TODO : can be made alot simpler
     # basically its just swapping keys of the dict
-
     p = dict()
     for f in fields:
-        # TODO : I should list out all the formats when I have time
-        if isinstance(f, models.DateField):
-            p[f.name] = datetime.datetime.strptime(d[f.verbose_name],
-                                                   dateformat)
-        else:
-            p[f.name] = d[f.verbose_name]
+        p[f.name] = d[f.verbose_name]
 
     return p
 
@@ -90,8 +80,9 @@ class Quote(models.Model):
     """ model for quote record """
     ticker = models.ForeignKey(Ticker)
 
-    last_trade_date = models.DateField(
+    last_trade_date = FormattedDateField(
         verbose_name='LastTradeDate',
+        format="%m/%d/%Y",
         null=True)
 
     last_trade_time = models.TimeField(
@@ -226,8 +217,6 @@ class Quote(models.Model):
         verbose_name='LastTradePriceOnly',
         null=True)
 
-    _dateformat = '%m/%d/%Y'
-
     def __unicode__(self):
         return (self.ticker.name +
                 ' ' +
@@ -241,9 +230,12 @@ class Historical(models.Model):
     class to store the historical record.
     Not sure if we will be using this forward
     """
+
     ticker = models.ForeignKey(Ticker)
-    date = models.DateField(
-        verbose_name='Date')
+
+    date = FormattedDateField(
+        verbose_name='Date',
+        format='%Y-%m-%d')
 
     volume = models.IntegerField(
         verbose_name='Volume',
@@ -258,8 +250,6 @@ class Historical(models.Model):
         verbose_name='Close',
         max_digits=6,
         decimal_places=2)
-
-    _dateformat = '%Y-%m-%d'
 
     def __unicode__(self):
         return self.ticker.name + ' ' + self.date.strftime('%Y-%m-%d')

@@ -2,7 +2,6 @@
 
 from yql import YQLError
 from ticker.yahoo_query import run_public_datatables_query
-from ticker.models import get_dateformat
 from ticker.models import get_fields
 from ticker.models import parse_query_result
 
@@ -34,13 +33,12 @@ class QueryInterface(object):
             self.results = results
 
         def to_model(self, model, **kwargs):
-            """ helper function to convert to Django model) """
+            """ helper function to convert to Django model """
 
             for q in self.results:
                 parsed = parse_query_result(q,
                                             get_fields(model,
-                                                       name_filter_list=q),
-                                            get_dateformat(model))
+                                                       name_filter_list=q))
                 try:
                     model.objects.create(**dict(kwargs, **parsed))
                 except Exception as e:

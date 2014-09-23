@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
 from visual.forms import SearchForm
 
 from visual.data_plots_utils import match_ticker_to_searchstring
-from visual.data_plots_utils import get_ticker_figure, get_figure_canvas
+from visual.data_plots_utils import get_quote_data
+from visual.data_plots_utils import draw_ticker_figure, get_figure_canvas
 
 from ticker.models import Ticker
 
@@ -27,11 +28,11 @@ def index(request):
 
             # creates the search
             try:
-                tick = match_ticker_to_searchstring(search.text)
+                symbol = match_ticker_to_searchstring(search.text)
 
                 # Now call the visual view
                 # The user will be shown the plot
-                return visualize_ticker(request, tick)
+                return ticker_png(request, symbol)
 
             except Ticker.DoesNotExist:
                 print """
@@ -49,31 +50,27 @@ def index(request):
     return render(request, 'visual/index.html', context)
 
 
-def visualize_ticker(request, tick):
-    """ view to deliver some visualization of the ticker """
+def visualize_ticker(request, symbol):
+    """ view to display information about the ticker """
 
-    # query the quote with fields set in the model
-    # quote = QueryInterface.query_quote(','.join(Quote.get_fields()),
-    #         qtext)
+    # get ticker
+    tick = get_object_or_404(Ticker, symbol=symbol)
 
-    # if quote.count > 0:
-    #     # will create the quote entry in the database, and return
-    #     quote_entry = Ticker.query_to_models(qtext, quote.results, Quote)
+    # get quote
+    quote = get_quote_data(symbol)
 
-    #     # get the plot (in string format)
-    #     plt_str = tick.plot()
+    # context
+    context = {'symbol': symbol,
+               'tick': tick,
+               'quote': quote}
+    return render(request, 'visual/ticker.html', context)
 
-    #     # save will handle duplicate entries
-    #     # quote.save()
-    #     #context = {'plt_str': plt_str}
-    #     #return render(request, 'visual/plot.html', context)
 
-    #     return HttpResponse(plt_str, content_type='image/png')
-    # else:
-    #     print "did not get any query result with qtext={}".format(qtext)
+def ticker_png(request, symbol):
+    """ view to draw the figure image """
 
     # get the ticker figure
-    fig = get_ticker_figure(tick)
+    fig = draw_ticker_figure(symbol)
 
     # get the figure canvas
     canvas = get_figure_canvas(fig)
@@ -83,6 +80,9 @@ def visualize_ticker(request, tick):
 
     # print the png to response
     canvas.print_png(response)
+
+    # clear the figure
+    fig.clear()
 
     # return ther response
     return response

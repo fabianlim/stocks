@@ -2,6 +2,32 @@
 
 from django.db import models
 
+import datetime
+
+
+class FormattedDateField(models.DateField):
+
+    """ Date Field whereby one can specify strptime format """
+
+    # need this to override to_python
+    __metaclass__ = models.SubfieldBase
+
+    def __init__(self, *args, **kwargs):
+        # store the format
+        self._format = kwargs.pop('format', "%Y-%M-%D")
+        super(FormattedDateField, self).__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        if not value:
+            return
+
+        # do this conversion if input is string
+        if isinstance(value, basestring):
+            value = datetime.datetime.strptime(value, self._format)
+
+        # call the parent's to_python function
+        return super(FormattedDateField, self).to_python(value)
+
 
 class PercentField(models.CharField):
 
@@ -12,18 +38,19 @@ class PercentField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         # CharField need to specify max_length
-        kwargs.update(dict(
-            max_length=20))
+        kwargs.update(dict(max_length=20))
         super(PercentField, self).__init__(*args, **kwargs)
 
     def get_prep_value(self, value):
         if not value:
             return
+
         return str(value * 100) + '%'
 
     def to_python(self, value):
         if not value:
             return
+
         return float(value.replace('%', "")) / 100
 
 
@@ -36,8 +63,7 @@ class BigFloatField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         # CharField need to specify max_length
-        kwargs.update(dict(
-            max_length=20))
+        kwargs.update(dict(max_length=20))
         super(BigFloatField, self).__init__(*args, **kwargs)
 
     # TODO can add more modifiers if needed
@@ -46,6 +72,7 @@ class BigFloatField(models.CharField):
     def get_prep_value(self, value):
         if not value:
             return
+
         for m in [''] + self._modifiers:
             if value >= 1000.0:
                 value /= 1000.0
@@ -56,6 +83,7 @@ class BigFloatField(models.CharField):
     def to_python(self, value):
         if not value:
             return
+
         v = [(1e3**(i+1), m) for i, m in
              enumerate(self._modifiers) if m in value]
 

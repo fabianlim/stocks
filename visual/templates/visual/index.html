@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Stocks</title>
+        <title>STI Stocks Analyses</title>
     </head>
 
     <body>
-        <form id="session_form" method="post" action="/stocks/">
+        <h1>Search for stocks</h1>
+        <form id="search_form" method="post" action={% url 'index' %}>
 
             {% csrf_token %}
             {% for field in form.visible_fields %}
+                {{ field }}
                 {{ field.errors }}
                 {{ field.help_text }}
-                {{ field }}
-                <br />
             {% endfor %}
-
-            <input type="submit" name="submit" value="Start Session" />
+            <input type="submit" name="search" value="Search" />
         </form>
     </body>
 </html>
