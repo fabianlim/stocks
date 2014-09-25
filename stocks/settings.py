@@ -36,7 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ticker',
-    'visual',
+    'dashboard',
     'south',
     'django_cron',
 )

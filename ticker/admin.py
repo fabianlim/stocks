@@ -1,5 +1,6 @@
 from django.contrib import admin
 from models import Ticker, Quote, Historical
+from models import Search
 
 
 # admin
@@ -36,3 +37,4 @@ class TickerAdmin(admin.ModelAdmin):
 admin.site.register(Ticker, TickerAdmin)
 admin.site.register(Quote, QuoteAdmin)
 admin.site.register(Historical, HistoricalAdmin)
+admin.site.register(Search)

@@ -253,3 +253,15 @@ class Historical(models.Model):
 
     def __unicode__(self):
         return self.ticker.name + ' ' + self.date.strftime('%Y-%m-%d')
+
+
+class Search(models.Model):
+    """ Model that holds a search query """
+
+    # session = models.ForeignKey(Session)
+    datetime = models.DateTimeField('datetime started')
+    text = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        # return self.text
+        return self.datetime.strftime('%m/%d/%Y %I:%M %p') + ": " + self.text

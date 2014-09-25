@@ -72,6 +72,15 @@ def draw_ticker_figure(symbol, fig=Figure()):
     return fig
 
 
+def match_ticker_to_searchstring(searchstr):
+
+    """ return the closest ticker to some search text """
+
+    # for the time being implement it this way
+    # return Ticker.objects.get(symbol=searchstr)
+    return searchstr
+
+
 def ticker_png(request, symbol):
     """ view to draw the figure image """
 
