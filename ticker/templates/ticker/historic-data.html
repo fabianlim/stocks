@@ -1,0 +1,12 @@
+
+<h2 class="sub-header">Historical data</h2>
+
+<div class="row placeholders">
+    {% for symbol in args.symbol %}
+    <div class="col-xs-6 col-sm-6">
+        <img src="{% url 'ticker:ticker_png' symbol %}" class="img-responsive" alt="Historical data" />
+        <h4>Ticker {{ symbol }} </h4>
+        <span class="text-muted">30 days</span>
+    </div>
+    {% endfor %}
+</div>

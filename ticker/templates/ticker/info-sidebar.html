@@ -1,0 +1,19 @@
+<!-- info sidebar -->
+
+{% for tick, quote in args.ticker_quotes %}
+    <div class="well hero-unit">
+        {% if tick %}
+            Symbol: {{ tick.symbol }} </br>
+            Name: {{ tick.name }} </br>
+            Industry: {{ tick.industry }} </br>
+            Industry ID: {{ tick.industry_id }} </br>
+        {% endif %} 
+
+        {% if quote %}
+            Last Trade Date: {{ quote.LastTradeDate }} </br>
+            Last Trade Time: {{ quote.LastTradeTime }} </br>
+            Last Trade Price: {{ quote.LastTradePriceOnly }} SGD </br>
+        {% endif %} 
+    </div>
+    </br>
+{% endfor %}
