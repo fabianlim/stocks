@@ -1,13 +1,13 @@
 from django.shortcuts import render
 
-from visual.forms import SearchForm
+from forms import SearchForm
 
-from visual.data_plots_utils import match_ticker_to_searchstring
-from visual.data_plots_utils import decode_parameter_uri
+from utils import match_ticker_to_searchstring
+from utils import decode_parameter_uri
 
-from ticker.models import Ticker
+from ticker.models import Ticker  # bad
 
-from ticker.utils import ticker_png
+from ticker.utils import ticker_png  # bad
 
 
 def index(request):
@@ -77,4 +77,4 @@ def dashboard(request, params):
     context = {"app_sidebar": app_sidebar,
                "app_main": app_main}
 
-    return render(request, 'visual/dashboard-base.html', context)
+    return render(request, 'visual/dashboard.html', context)

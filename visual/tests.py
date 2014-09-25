@@ -5,7 +5,7 @@ from django.test import TestCase
 
 import urllib
 import pprint
-from visual.data_plots_utils import decode_parameter_uri
+from utils import decode_parameter_uri
 
 
 class TestURIDecoder(TestCase):

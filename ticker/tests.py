@@ -1,14 +1,14 @@
 from django.test import TestCase
 
-from ticker.models import Ticker
+from models import Ticker
 
-from ticker.utils import draw_ticker_figure
+from utils import draw_ticker_figure
 
 from matplotlib import pyplot as plt
 
 # Create your tests here.
 
-from visual.views import dashboard
+from visual.views import dashboard  # bad
 
 from django.http import HttpRequest
 

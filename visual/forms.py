@@ -1,6 +1,6 @@
 from django import forms
 from django.utils import timezone
-from visual.models import Search
+from models import Search
 
 
 class SearchForm(forms.ModelForm):

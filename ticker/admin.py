@@ -1,9 +1,10 @@
 from django.contrib import admin
-from ticker.models import Ticker, Quote, Historical
+from models import Ticker, Quote, Historical
+
 
 # admin
 class QuoteAdmin(admin.ModelAdmin):
-    fieldsets=[
+    fieldsets = [
         ("Basic Infomation", {'fields': ['ticker', 'date', 'time']}),
         ("Pricing", {'fields': ['change', 'ask']}),
     ]
@@ -11,22 +12,25 @@ class QuoteAdmin(admin.ModelAdmin):
     list_filter = ['time', 'date']
     search_fields = ['ticker__name']
 
+
 # admin
 class QuoteInline(admin.StackedInline):
     model = Quote
     extra = 10
+
 
 # admin
 class HistoricalAdmin(admin.ModelAdmin):
     list_display = ('date', 'open', 'close', 'ticker')
     search_fields = ['ticker__name']
 
+
 # admin
 class TickerAdmin(admin.ModelAdmin):
     list_display = ('symbol', 'name', 'industry', 'industry_id')
     # list_filter = ('symbol', 'name', 'industry', 'industry_id')
     # search_fields = ['symbol', 'name']
-    inlines= [QuoteInline]
+    inlines = [QuoteInline]
 
 # Register your models here.
 admin.site.register(Ticker, TickerAdmin)

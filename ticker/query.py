@@ -1,9 +1,9 @@
 # Query Interface
 
 from yql import YQLError
-from ticker.yahoo_query import run_public_datatables_query
-from ticker.models import get_fields
-from ticker.models import parse_query_result
+from yahoo_query import run_public_datatables_query
+from models import get_fields
+from models import parse_query_result
 
 from django.utils import timezone
 from datetime import timedelta

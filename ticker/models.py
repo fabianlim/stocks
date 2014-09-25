@@ -1,6 +1,6 @@
 from django.db import models
 
-from ticker.fields import PercentField, BigFloatField, FormattedDateField
+from fields import PercentField, BigFloatField, FormattedDateField
 
 # for south migrations
 from south.modelsinspector import add_introspection_rules

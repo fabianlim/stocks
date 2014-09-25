@@ -31,7 +31,7 @@ def histograms_compare(df, field='pe_ratio'):
 if __name__ == '__main__':
 
     # test stuff
-    from csv_data.clean_data import unpickle
+    from clean_data import unpickle
 
     df = unpickle()
     histograms_compare('volume')

@@ -1,5 +1,9 @@
-from ticker.models import Ticker
-from ticker.utils import get_quote_data
+from models import Ticker
+from utils import get_quote_data
+
+import os
+
+cur_dir = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
 
 
 class DashboardRegistration(object):
@@ -7,7 +11,7 @@ class DashboardRegistration(object):
 
     @staticmethod
     def get_app_main(params):
-        return {"template_path": "visual/historic-data.html",
+        return {"template_path": cur_dir + "/historic-data.html",
                 "args": {"symbol": params['symbol']}}
 
     @staticmethod
@@ -22,5 +26,5 @@ class DashboardRegistration(object):
             # get quote
             quote += [get_quote_data(symbol), ]
 
-        return {"template_path": "visual/ticker-info-sidebar.html",
+        return {"template_path": cur_dir + "/info-sidebar.html",
                 "args": {"ticker_quotes": zip(tick, quote)}}

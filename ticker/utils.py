@@ -1,12 +1,11 @@
-from ticker.query import QueryInterface
+from query import QueryInterface
 
-from ticker.models import Quote, Historical
-from ticker.models import get_fields, get_field_verbose_names
+from models import Quote, Historical
+from models import get_fields, get_field_verbose_names
 
 from matplotlib.figure import Figure
 from matplotlib.dates import DateFormatter
-
-from visual.data_plots_utils import get_figure_canvas
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from django.http import HttpResponse
 
@@ -80,7 +79,7 @@ def ticker_png(request, symbol):
     fig = draw_ticker_figure(symbol)
 
     # get the figure canvas
-    canvas = get_figure_canvas(fig)
+    canvas = FigureCanvas(fig)
 
     # get a image-type HttpResponse
     response = HttpResponse(content_type='image/png')
