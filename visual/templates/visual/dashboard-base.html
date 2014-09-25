@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+{% extends 'visual/base.html' %}
+
+{% load staticfiles %}
+
+{% block head %}
+<!-- Custom styles for this template -->
+<link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
+{% endblock head %}
+
+{% block body_block %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+
+            <!-- if ticker is loaded, print some info here-->
+            {% if app_sidebar.ticker %}
+                {% for tick, quote in app_sidebar.ticker.args.ticker_quotes %}
+                    {% include app_sidebar.ticker.template_path with tick=tick quote=quote %}
+                {% endfor %}
+            {% endif %}
+
+            <!-- navigation sidebar -->
+            <ul class="nav nav-sidebar">
+                <li class="active"><a href="#">Historical</a></li>
+                <li><a href="#">TODO</a></li>
+            </ul>
+        </div>
+
+        <!-- main area for displaying individual peices -->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% if app_main %}
+                {% for app in app_main.values %}
+                    {% include app.template_path with args=app.args %} 
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

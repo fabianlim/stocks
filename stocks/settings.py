@@ -68,7 +68,8 @@ DATABASES = {
     }
 }
 
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates'),
+                 os.path.join(BASE_DIR, 'visual/templates'), ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -88,13 +89,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 # Static asset configuration
-#import os
+# import os
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_PATH, 'static'),
+    # os.path.join(PROJECT_PATH, 'static'),
+    os.path.join(BASE_DIR, 'static'),
 )
 
 # # Allow all host hosts/domain names for this site
@@ -103,9 +105,9 @@ ALLOWED_HOSTS = ['*']
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
 
-DATABASES = { 'default' : dj_database_url.config()}
+DATABASES = {'default': dj_database_url.config()}
 
-SOUTH_DATABASE_ADAPTERS = {'default':'south.db.postgresql_psycopg2'}
+SOUTH_DATABASE_ADAPTERS = {'default': 'south.db.postgresql_psycopg2'}
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -114,5 +116,4 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 try:
     from local_settings import *
 except Exception as e:
-  pass
-
+    pass

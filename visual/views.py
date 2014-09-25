@@ -1,17 +1,18 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.shortcuts import render
 
 from visual.forms import SearchForm
 
 from visual.data_plots_utils import match_ticker_to_searchstring
-from visual.data_plots_utils import get_quote_data
-from visual.data_plots_utils import draw_ticker_figure, get_figure_canvas
+from visual.data_plots_utils import decode_parameter_uri
 
 from ticker.models import Ticker
+
+from ticker.utils import ticker_png
 
 
 def index(request):
     """ index view with the query searchbar """
+    # TODO : this view needs to be changed
 
     # A HTTP POST?
     if request.method == 'POST':
@@ -49,40 +50,31 @@ def index(request):
     context = {'form': form}
     return render(request, 'visual/index.html', context)
 
-
-def visualize_ticker(request, symbol):
-    """ view to display information about the ticker """
-
-    # get ticker
-    tick = get_object_or_404(Ticker, symbol=symbol)
-
-    # get quote
-    quote = get_quote_data(symbol)
-
-    # context
-    context = {'symbol': symbol,
-               'tick': tick,
-               'quote': quote}
-    return render(request, 'visual/ticker.html', context)
+import importlib
 
 
-def ticker_png(request, symbol):
-    """ view to draw the figure image """
+def dashboard(request, params):
+    """ view to display dashboard """
 
-    # get the ticker figure
-    fig = draw_ticker_figure(symbol)
+    # decode the params uri into a dictionary
+    params = decode_parameter_uri(params)
 
-    # get the figure canvas
-    canvas = get_figure_canvas(fig)
+    app_sidebar = dict()
+    app_main = dict()
+    for appname in params.keys():
+        try:
+            # each app must have a DashboardRegistration object defined in the
+            # __init__.py
+            m = importlib.import_module(appname)
+            app_sidebar[appname] = m.DashboardRegistration.get_app_sidebar(
+                params[appname])
+            app_main[appname] = m.DashboardRegistration.get_app_main(
+                params[appname])
+        except ImportError as e:
+            print "dashboard ({}): Import error {}".format(appname, e)
+            pass
 
-    # get a image-type HttpResponse
-    response = HttpResponse(content_type='image/png')
+    context = {"app_sidebar": app_sidebar,
+               "app_main": app_main}
 
-    # print the png to response
-    canvas.print_png(response)
-
-    # clear the figure
-    fig.clear()
-
-    # return ther response
-    return response
+    return render(request, 'visual/dashboard-base.html', context)
