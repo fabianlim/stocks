@@ -21,13 +21,16 @@ def make_numerical_pandas(df, model):
 def get_quote_data(symbol):
     """ method to produce an instantaneous quote data """
 
+    if not isinstance(symbol, list):
+        symbol = [symbol]
+
     q = QueryInterface.query_quote(','.join(get_field_verbose_names(Quote)),
-                                   symbol)
+                                   ','.join(symbol))
 
     if q.count == 0:
         return {}
 
-    return q.results[0]
+    return q.results
 
 
 def draw_ticker_figure(symbol, fig=Figure()):

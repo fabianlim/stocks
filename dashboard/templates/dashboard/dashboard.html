@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-
 {% extends 'base.html' %}
 
 {% load staticfiles %}
@@ -9,27 +7,45 @@
 <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
 {% endblock head %}
 
+{% block navbar_control %}
+    <form class="navbar-form navbar-right", action="">
+        <input type="text" class="form-control" placeholder="Search...">
+        <button type="submit" class="btn btn-primary">Go</button>
+    </form>
+{% endblock %}
+
 {% block body_block %}
 <div class="container-fluid">
     <div class="row">
         
         <!-- sidebar stats display -->
-        <div class="col-sm-3 col-md-2 sidebar">
-            {% if app_sidebar %}
-                {% for app in app_sidebar %}
-                    {% include app.template_path with args=app.args %} 
-                {% endfor %}
-            {% endif %}
-        </div>
+        {% if app_sidebar %}
+            <div class="col-sm-3 col-md-2 sidebar">
+                    {% for app in app_sidebar %}
+                        {% include app.template_path with args=app.args %} 
+                    {% endfor %}
+            </div>
+        {% endif %}
 
-        <!-- main area for displaying individual peices -->
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            {% if app_main %}
-                {% for app in app_main %}
-                    {% include app.template_path with args=app.args %} 
-                {% endfor %}
-            {% endif %}
-        </div>
+        <!-- main area display -->
+        {% if app_main %}
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    {% for app in app_main %}
+                        {% include app.template_path with args=app.args %} 
+                    {% endfor %}
+            </div>
+        {% endif %}
+
+        <!--search area display -->
+        <! -- must be a way to specify that either app_main or app_search will
+        be active -->
+        {% if app_search %}
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    {% for app in app_search %}
+                        {% include app.template_path with args=app.args %} 
+                    {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

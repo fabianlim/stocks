@@ -1,0 +1,22 @@
+
+<h2 class="sub-header">Searching tickers ...</h2>
+<div class="hero-unit">
+    {% for result in args.search_results %}
+        <li>
+            [{{ result.symbol }}]    
+            <em>
+                {% autoescape off %}
+                    {{ result.headline }} 
+                {% endautoescape %}
+            </em>
+            <strong> 
+                relevancy: {{ result.relevance }}
+            </strong>
+            </br>
+            Last Trade Price {{ result.quote.LastTradePriceOnly }} SGD, 
+            Last Trade Date {{ result.quote.LastTradeDate}},  
+            Last Trade Time {{ result.quote.LastTradeTime}},  
+            Volume {{ result.quote.Volume}},  
+        </li>
+    {% endfor %}
+</div>

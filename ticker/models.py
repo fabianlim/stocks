@@ -1,5 +1,8 @@
 from django.db import models
 
+from djorm_pgfulltext.models import SearchManager
+from djorm_pgfulltext.fields import VectorField
+
 from fields import PercentField, BigFloatField, FormattedDateField
 
 # for south migrations
@@ -60,6 +63,16 @@ class Ticker(models.Model):
 
         # return tick
         return tick
+
+    # for full-text searching
+    search_index = VectorField()
+
+    # search manager for full-text searching
+    objects = SearchManager(
+        fields=('symbol', 'name', 'industry'),
+        config='pg_catalog.english',
+        search_field='search_index',
+        auto_update_search_field=True)
 
 
 def parse_query_result(d, fields):
