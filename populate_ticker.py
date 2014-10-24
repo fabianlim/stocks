@@ -3,7 +3,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stocks.settings')
 
 from ticker.models import Ticker, Quote, Historical
 from ticker.query import QueryInterface
-from ticker.models import get_field_verbose_names
+from common.utils import get_field_verbose_names
+from common.utils import get_fields
 
 import datetime
 
@@ -140,12 +141,63 @@ def test_pandas():
 
     # print q.to_pandas()
 
-    from ticker.models import get_fields
     df = q.to_pandas()
     for f in get_fields(Quote, name_filter_list=df.columns):
         df[f.verbose_name] = df[f.verbose_name].map(lambda x: f.to_python(x))
 
     print df['LastTradeDate']
+
+
+def pandas_to_db(pickle_filename):
+    """ unpickle the pandas file from the db and load the data into
+    the database"""
+    import pickle
+
+    df = pickle.load(open(pickle_filename, 'rb'))
+
+    def ticker_portion(df):
+        # get the ticker part
+
+        field_names = get_fields(Ticker,
+                                 attr_func=lambda x: x.name,
+                                 filt_func=lambda x: x.name,
+                                 name_filter_list=df.columns)
+
+        return df[field_names].drop_duplicates()
+
+    def quote_portion(df):
+        # get the Quote fields that are in dataframe colums
+        field_names = get_fields(Quote,
+                                 attr_func=lambda x: x.name,
+                                 filt_func=lambda x: x.name,
+                                 name_filter_list=df.columns)
+
+        # I need to include 'ticker_id' here because its a Foreign Key Field
+        # and the name is different (i.e. 'ticker') in Quote
+        field_names += ['ticker_id', ]
+        df = df[field_names]
+
+        # TODO : I changed the fields to try the default format if everything
+        # fails (so dont need this anymore)
+        # need to specially convert date fields since the have been converted to
+        # df['last_trade_date'] = df['last_trade_date'].map(
+        #    lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
+
+        # this is auto gen anyway
+        df.drop('id', axis=1, inplace=True)
+
+        return df
+
+    def insert_to_model(model, df, portion):
+        model.objects.all().delete()
+        for index, r in portion(df).iterrows():
+            # print r
+            model.objects.create(**r.to_dict())
+
+    # Ticker
+    # insert_to_model(Ticker, df, ticker_portion)
+    insert_to_model(Quote, df, quote_portion)
+
 
 if __name__ == '__main__':
     funcs = {'sparse_entries': sparse_entries,
@@ -154,7 +206,8 @@ if __name__ == '__main__':
              'add_sg_quote': add_sg_quote,
              'pull_sg_quotes': pull_sg_quotes,
              'top_five_most_quotes': top_five_most_quotes,
-             'test_pandas': test_pandas}
+             'test_pandas': test_pandas,
+             'pandas_to_db': pandas_to_db}
 
     import argparse
 

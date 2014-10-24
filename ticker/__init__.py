@@ -34,7 +34,7 @@ class DashboardRegistration(object):
         # run the full-text search
         # returns a query set
         search_results = Ticker.objects.search(
-            params['?str?'],
+            params['?keys?'],
             rank_field='relevance',
             headline_document="""name || ', ' ||
                                  industry || ', '
@@ -47,7 +47,6 @@ class DashboardRegistration(object):
         for r, q in zip(search_results, quotes):
             r.quote = q
 
-        print search_results[0].quote
         # return
         return {"template_path": cur_dir + "/ticker-search.html",
                 "args": {"search_results": search_results}}

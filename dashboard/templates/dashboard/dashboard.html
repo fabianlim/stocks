@@ -8,8 +8,19 @@
 {% endblock head %}
 
 {% block navbar_control %}
-    <form class="navbar-form navbar-right", action="">
-        <input type="text" class="form-control" placeholder="Search...">
+    <ul class="nav navbar-nav navbar-right">
+
+        <!-- the '/' in front makes it an absolute path -->
+        <li><a href="{% url 'dashboard' %}?{{ encoded_query_string}}">Dashboard</a></li>
+    </ul>
+    <form class="navbar-form navbar-right", method="post",
+        action={% url 'search' %}?{{ encoded_query_string}}> 
+
+        {% csrf_token %}
+        <input type="text" class="form-control" placeholder="Search...",
+            value="{{ searchstr }}",
+            name="navbar-search-text",
+            id="navbar-search-text">
         <button type="submit" class="btn btn-primary">Go</button>
     </form>
 {% endblock %}
@@ -22,7 +33,9 @@
         {% if app_sidebar %}
             <div class="col-sm-3 col-md-2 sidebar">
                     {% for app in app_sidebar %}
-                        {% include app.template_path with args=app.args %} 
+                        {% if app.template_path %}
+                            {% include app.template_path with args=app.args %} 
+                        {% endif %}
                     {% endfor %}
             </div>
         {% endif %}
@@ -31,7 +44,9 @@
         {% if app_main %}
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     {% for app in app_main %}
-                        {% include app.template_path with args=app.args %} 
+                        {% if app.template_path %}
+                            {% include app.template_path with args=app.args %} 
+                        {% endif %}
                     {% endfor %}
             </div>
         {% endif %}
@@ -42,7 +57,9 @@
         {% if app_search %}
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     {% for app in app_search %}
-                        {% include app.template_path with args=app.args %} 
+                        {% if app.template_path %}
+                            {% include app.template_path with args=app.args %} 
+                        {% endif %}
                     {% endfor %}
             </div>
         {% endif %}

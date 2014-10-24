@@ -14,7 +14,7 @@ class FormattedDateField(models.DateField):
 
     def __init__(self, *args, **kwargs):
         # store the format
-        self._format = kwargs.pop('format', "%Y-%M-%D")
+        self._format = kwargs.pop('format', "%Y-%m-%d")
         super(FormattedDateField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
@@ -23,7 +23,12 @@ class FormattedDateField(models.DateField):
 
         # do this conversion if input is string
         if isinstance(value, basestring):
-            value = datetime.datetime.strptime(value, self._format)
+            try:
+                value = datetime.datetime.strptime(value, self._format)
+            except:
+                # if fails the strptime, may be already in default format
+                # so just try that
+                value = datetime.datetime.strptime(value, "%Y-%m-%d")
 
         # call the parent's to_python function
         return super(FormattedDateField, self).to_python(value)
@@ -51,7 +56,11 @@ class PercentField(models.CharField):
         if not value:
             return
 
-        return float(value.replace('%', "")) / 100
+        try:
+            return float(value.replace('%', "")) / 100
+        except AttributeError:
+            # value = nan will give a type error
+            return value
 
 
 class BigFloatField(models.CharField):
@@ -84,11 +93,24 @@ class BigFloatField(models.CharField):
         if not value:
             return
 
-        v = [(1e3**(i+1), m) for i, m in
-             enumerate(self._modifiers) if m in value]
+        try:
+            v = [(1e3**(i+1), m) for i, m in
+                 enumerate(self._modifiers) if m in value]
 
-        if len(v) == 1:
-            e, m = v[0]
-            return float(value.replace(m, '')) * e
-        else:
-            return
+            if len(v) == 1:
+                e, m = v[0]
+                return float(value.replace(m, '')) * e
+            else:
+                return
+        except TypeError:
+            # if value is nan will get a type erro
+            return value  # return the nan
+
+# for south migrations
+try:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ["^ticker\.fields\.FormattedDateField"])
+    add_introspection_rules([], ["^ticker\.fields\.PercentField"])
+    add_introspection_rules([], ["^ticker\.fields\.BigFloatField"])
+except ImportError:
+    pass

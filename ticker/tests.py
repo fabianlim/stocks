@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 
 # Create your tests here.
 
-from visual.views import dashboard  # bad
+from dashboard.views import dashboard  # bad
 
 from django.http import HttpRequest
 
@@ -50,3 +50,49 @@ class TestTicker(TestCase):
         request = HttpRequest()
 
         dashboard(request, uri)
+
+
+from ticker.models import Quote
+
+from ticker.utils import make_numerical_pandas
+
+import pandas as pd
+
+from datetime import timedelta
+from django.utils import timezone
+
+import pickle
+
+
+class TestFixtures(TestCase):
+    """ show have to get past 30 days data from
+    Django models and convert to a pandas df """
+
+    fixtures = ["db_dump.json", ]
+
+    def test_dump_df(self):
+        q = Quote.objects.filter(
+            date__gte=timezone.now().date()-timedelta(30))
+
+        df = pd.DataFrame.from_records(q.values())
+
+        # pickle this so I dont have to create the test
+        # database (which takes a long time)
+        pickle.dump(df, open('debug.p', 'wb'))
+
+
+class TestPandas(TestCase):
+
+    """ this moves from the raw df dumped from the model,
+    into a numerical df ready for processing """
+    def test_pandas(self):
+        df = pickle.load(open('debug.p', 'rb'))
+
+        # filt_func uses "name", because the df comes from
+        # Django model, which uses "name" as field names
+        make_numerical_pandas(df,
+                              Quote,
+                              df_fields=lambda x: x.name,
+                              filt_func=lambda x: x.name)
+
+        print df.head()

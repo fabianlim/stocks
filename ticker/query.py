@@ -2,8 +2,9 @@
 
 from yql import YQLError
 from yahoo_query import run_public_datatables_query
-from models import get_fields
 from models import parse_query_result
+
+from common.utils import get_fields
 
 from django.utils import timezone
 from datetime import timedelta

@@ -5,6 +5,10 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
                        url(r'^stocks/', include('dashboard.urls')),
+                       url(r'^dimreduce/',
+                           include('dimreduce.urls',
+                                   namespace='dimreduce')),
                        url(r'^ticker/', include('ticker.urls',
                                                 namespace='ticker')),
-                       url(r'^admin/', include(admin.site.urls)),)
+                       url(r'^admin/', include(admin.site.urls)),
+                       )

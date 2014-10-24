@@ -17,3 +17,7 @@ UPDATE ticker_ticker
                to_tsvector('pg_catalog.english', symbol) || 
                to_tsvector('pg_catalog.english', industry)
 );
+
+-- to restart the sequence
+alter sequence ticker_ticker_id_seq restart with 1;
+alter sequence ticker_quote_id_seq restart with 1;

@@ -5,26 +5,7 @@ from djorm_pgfulltext.fields import VectorField
 
 from fields import PercentField, BigFloatField, FormattedDateField
 
-# for south migrations
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^ticker\.fields\.FormattedDateField"])
-add_introspection_rules([], ["^ticker\.fields\.PercentField"])
-add_introspection_rules([], ["^ticker\.fields\.BigFloatField"])
-
-
-def get_fields(model, name_filter_list=None):
-    """ helper function to return model fields """
-    if name_filter_list is None:
-        return model._meta.fields
-    else:
-        return [f for f in get_fields(model) if
-                f.verbose_name in name_filter_list]
-
-
-def get_field_verbose_names(model, name_filter_list=None):
-    """ helper function to return model fields verbose names """
-
-    return [f.verbose_name for f in get_fields(model, name_filter_list)]
+import datetime
 
 
 class Ticker(models.Model):
@@ -103,12 +84,10 @@ class Quote(models.Model):
         null=True)
 
     date = models.DateField(
-        verbose_name='Date',
-        auto_now_add=True)
+        verbose_name='Date')
 
     time = models.TimeField(
-        verbose_name='Time',
-        auto_now_add=True)
+        verbose_name='Time')
 
     annual_gain = models.FloatField(
         verbose_name='AnnualizedGain',
@@ -229,6 +208,23 @@ class Quote(models.Model):
     last_trade_price = models.FloatField(
         verbose_name='LastTradePriceOnly',
         null=True)
+
+    def save(self, *args, **kwargs):
+
+        """ the purpose of doing this rather than
+            using auto_now, is that it gives us an option to
+            specify a date/time if we want to.
+            auto_now always needs to be placed with the current
+            time
+            """
+
+        # if 'date' not in kwargs or 'time' not in kwargs:
+        if (self.date is None) or (self.time is None):
+            dt = datetime.datetime.now()
+            self.date = dt.date()
+            self.time = dt.time()
+
+        super(Quote, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return (self.ticker.name +

@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'dashboard',
     'south',
     'django_cron',
+    'dimreduce',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -84,6 +85,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+FIXTURE_DIRS = [os.path.join(BASE_DIR, 'fixtures'), ]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/

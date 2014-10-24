@@ -1,21 +1,12 @@
 from query import QueryInterface
 
 from models import Quote, Historical
-from models import get_fields, get_field_verbose_names
+
+from common.utils import get_field_verbose_names
+from common.utils import df_make_numerical
 
 from matplotlib.figure import Figure
 from matplotlib.dates import DateFormatter
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
-from django.http import HttpResponse
-
-
-def make_numerical_pandas(df, model):
-
-    """ method to convert columns of df to be numerical """
-
-    for f in get_fields(model, name_filter_list=df.columns):
-        df[f.verbose_name] = df[f.verbose_name].map(lambda x: f.to_python(x))
 
 
 def get_quote_data(symbol):
@@ -33,7 +24,12 @@ def get_quote_data(symbol):
     return q.results
 
 
-def draw_ticker_figure(symbol, fig=Figure()):
+def draw_ticker_figure(symbol, fig=None):
+
+    # TODO: Figure() in the keyargs makes it give to same Figure somehow
+    # messing things up
+    if fig is None:
+        fig = Figure()
 
     """ method to produce a data plot for the ticker """
     # TODO: implementing plot using historical data, could be changed later
@@ -47,7 +43,7 @@ def draw_ticker_figure(symbol, fig=Figure()):
 
     # convert to pandas and make the df numerical
     df = q.to_pandas()
-    make_numerical_pandas(df, Historical)
+    df_make_numerical(df, Historical)
 
     # start plotting
     fig.suptitle("ticker {} historical data".format(symbol))
@@ -82,25 +78,3 @@ def match_ticker_to_searchstring(searchstr):
     # for the time being implement it this way
     # return Ticker.objects.get(symbol=searchstr)
     return searchstr
-
-
-def ticker_png(request, symbol):
-    """ view to draw the figure image """
-
-    # get the ticker figure
-    fig = draw_ticker_figure(symbol)
-
-    # get the figure canvas
-    canvas = FigureCanvas(fig)
-
-    # get a image-type HttpResponse
-    response = HttpResponse(content_type='image/png')
-
-    # print the png to response
-    canvas.print_png(response)
-
-    # clear the figure
-    fig.clear()
-
-    # return ther response
-    return response

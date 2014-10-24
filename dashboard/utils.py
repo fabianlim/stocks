@@ -1,8 +1,5 @@
 """ Collection of scripts/utilities """
 
-import urlparse
-import json
-
 
 # def decode_parameter_uri(params_uri):
 #     """ decode the param uri into a json dictionary """
@@ -23,12 +20,51 @@ import json
 #
 #     return d
 
-def decode_parameter_uri(params_uri):
-    """ decode the param uri into a json dictionary """
+import importlib
 
-    # will return a sequence
-    # {param_key : [ list ]}
-    keys, vals = zip(*urlparse.parse_qsl(params_uri))
 
-    # use json to parse
-    return zip(keys, [json.loads(v.replace('\'', '\"')) for v in vals])
+def get_apps_from_qdict(qdict, group_name='sidebar'):
+    """ helper function to get apps from qdict """
+
+    # its essentially a query dict, but is actually in a (key, val) sequence
+    # format
+    apps = []
+    for appname, appval in qdict:
+        try:
+            # each app must have a DashboardRegistration object defined in the
+            # __init__.py
+            m = importlib.import_module(appname)
+
+            # get the method for the group we want and put it in get_app_func
+            get_app_func = getattr(m.DashboardRegistration,
+                                   'get_app_' + group_name)
+
+            # run get_app_func to process appval and append the result to apps
+            apps.append(get_app_func(appval))
+        except ImportError as e:
+            print "dashboard-{} ({}): Import error {}".format(group_name,
+                                                              appname,
+                                                              e)
+            pass
+
+    return apps
+
+
+# import urllib
+
+# from django.core.urlresolvers import reverse
+
+# def reverse_lookup_url_tags(searchstr):
+#     # TODO : is this needed anymore?
+#     """ helper function to reverse lookup key url strings """
+#     # TODO : it seemed that django template {% url %} tags do not handle
+#     # query strings too well, so thats why we do it in python
+#
+#     # this will return /name/dashboard=?params/
+#     # TODO : the reverse lookup does not return absolute paths,
+#     # so you need to add '/' in front if you need an absolute path
+#     return {'dashboard': urllib.quote(reverse('dashboard',
+#                                               args=("p")).strip("p/")),
+#             # this will return /name/search=?params/
+#             'search': urllib.quote(
+#                 reverse('search', args=(searchstr, "p")).strip("p/"))}

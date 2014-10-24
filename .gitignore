@@ -13,3 +13,5 @@ ticker/migrations/*.*
 ### csv ###
 **/*.csv
 
+### json
+*.json
