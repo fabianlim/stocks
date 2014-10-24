@@ -1,0 +1,14 @@
+<h2 class="sub-header">Searching Dimension Reduction ...</h2>
+<div class="hero-unit">
+    {% for result in args.search_results %}
+        <li>
+            [{{ result.procedure}}]    
+            <strong> 
+                relevancy: {{ result.relevance }}
+            </strong>
+            </br>
+            Date Computed {{ result.input_validity }}, 
+            Parameters {{ result.parameters }},
+        </li>
+    {% endfor %}
+</div>

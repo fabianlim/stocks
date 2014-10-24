@@ -1,0 +1,22 @@
+<h2 class="sub-header">Principal Component Analysis</h2>
+
+{{ args.params }}
+<h4> input: {{ args.input }} </h4>
+
+<div class="row placeholders">
+
+    <!-- eigen_dirs -->
+    <div class="col-xs-6 col-sm-6">
+        <img src="{% url 'dimreduce:pca' %}?figure=eigen_dirs&{{args.querystr}}" 
+        class="img-responsive" alt="eigen_dirs"/>
+        <h4>eigen dirs</h4>
+    </div>
+
+    <!-- singular values -->
+    <div class="col-xs-6 col-sm-6">
+        <img src="{% url 'dimreduce:pca' %}?figure=singular_values&{{args.querystr}}"
+        class="img-responsive" alt="singular_values"/>
+        <h4>singular values</h4>
+    </div>
+
+</div>
