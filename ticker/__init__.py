@@ -48,5 +48,8 @@ class DashboardRegistration(object):
             r.quote = q
 
         # return
+        # return {"template_path": cur_dir + "/ticker-search.html",
+        #         "args": {"search_results": search_results,
+        #                  "query_str": params['?eqstr']}}
         return {"template_path": cur_dir + "/ticker-search.html",
                 "args": {"search_results": search_results}}

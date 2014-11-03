@@ -4,7 +4,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-                       url(r'^stocks/', include('dashboard.urls')),
+                       url(r'^stocks/',
+                           include('dashboard.urls')),
                        url(r'^dimreduce/',
                            include('dimreduce.urls',
                                    namespace='dimreduce')),

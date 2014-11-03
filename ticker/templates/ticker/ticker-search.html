@@ -1,4 +1,6 @@
 
+{% load dashboard_tags %} 
+
 <h2 class="sub-header">Searching tickers ...</h2>
 <div class="hero-unit">
     {% for result in args.search_results %}
@@ -17,6 +19,17 @@
             Last Trade Date {{ result.quote.LastTradeDate}},  
             Last Trade Time {{ result.quote.LastTradeTime}},  
             Volume {{ result.quote.Volume}},  
+
+            <button url="{% url_python "sidebar" %}"
+                    query-str="{% updated_query_str request "ticker" "symbol" result.symbol %}" 
+                    class="query-add btn btn-mini btn-info" type="button">
+                    Watch 
+            </button>
+
+            {% comment %}
+            <a href="{% url_python "sidebar" %}?{% updated_query_str request "ticker" "symbol" result.symbol %}">Watch</a>
+            {% new_query_button "ticker" "symbol" result.symbol %}
+            {% endcomment %}
         </li>
     {% endfor %}
 </div>

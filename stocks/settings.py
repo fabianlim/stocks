@@ -59,7 +59,16 @@ ROOT_URLCONF = 'stocks.urls'
 
 WSGI_APPLICATION = 'stocks.wsgi.application'
 
-
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'cache_table',
+        'TIMEOUT': 60,
+        'OPTIONS': {
+            'MAX_ENTRIES': 10
+        }
+    }
+}
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
@@ -71,6 +80,12 @@ DATABASES = {
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates'),
                  os.path.join(BASE_DIR, 'visual/templates'), ]
+
+from django.conf import global_settings
+
+TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+    'django.core.context_processors.request',
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

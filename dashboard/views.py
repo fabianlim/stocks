@@ -14,6 +14,18 @@ import os
 cur_dir = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
 
 
+def sidebar(request):
+
+    """ view to get sidebar only """
+    # converts QueryDict to dict, QueryDict does not handle nesting
+    # well
+    qdict = query_to_dict(request.GET)
+
+    context = {"app_sidebar": get_apps_from_qdict(qdict, 'sidebar')}
+
+    return render(request, cur_dir + '/dashboard-sidebar.html', context)
+
+
 def dashboard(request):
     """ view to display dashboard """
 
@@ -22,8 +34,7 @@ def dashboard(request):
     qdict = query_to_dict(request.GET)
 
     context = {"app_sidebar": get_apps_from_qdict(qdict, 'sidebar'),
-               "app_main": get_apps_from_qdict(qdict, 'main'),
-               "encoded_query_string": request.GET.urlencode()}
+               "app_main": get_apps_from_qdict(qdict, 'main')}
 
     return render(request, cur_dir + '/dashboard.html', context)
 
@@ -49,6 +60,11 @@ def search(request):
         return redirect(reverse('search') + '?' +
                         qcopy.urlencode())
 
+    # remove the search key if exists from encoded_query_string
+    encoded_query_string = request.GET.copy()
+    del encoded_query_string['search']
+    encoded_query_string = encoded_query_string.urlencode()
+
     # add the search string to qdict of each app
     # TODO : this may clash the key used in val
     # to workaround i try to chose a more unique key such as ?keys?
@@ -61,7 +77,6 @@ def search(request):
     # How to do this?
     context = {"app_sidebar": get_apps_from_qdict(qdict, 'sidebar'),
                "app_search": get_apps_from_qdict(qdict, 'search'),
-               "searchstr": request.GET["search"],
-               "encoded_query_string": request.GET.urlencode()}
+               "searchstr": request.GET["search"]}
 
     return render(request, cur_dir + '/dashboard.html', context)

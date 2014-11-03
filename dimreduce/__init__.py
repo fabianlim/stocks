@@ -21,7 +21,6 @@ class DashboardRegistration(object):
         template = qdict["algo"]
         qdict.pop("algo", None)
 
-        print "app_main {}".format(qdict)
         return {"template_path": cur_dir + "/" + template + '-main.html',
                 "args": {'input': qdict['input'],
                          'querystr': urllib.urlencode(qdict)}}

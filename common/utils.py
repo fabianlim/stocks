@@ -150,5 +150,4 @@ def split_keyval_sequence(kv, it):
 
 
 def split_template_from_querydict(qdict):
-
     return qdict["algo"] + ".html"

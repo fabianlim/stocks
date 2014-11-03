@@ -13,10 +13,11 @@ class TestURIDecoder(TestCase):
 
     def setUp(self):
         # self.d = {"ticker": {"symbol": ["S68.SI", "M30.SI"]},
-        #           "kmeans": {"k": 4, "time": ["now", "yest"]}}
+        #            "kmeans": {"k": 4, "time": ["now", "yest"]}}
         self.d = {"ticker": {"symbol": ["S68.SI", "M30.SI"]},
                   "dimreduce": {"algo": "pca",
                                 "input": "/ticker/data/quote/?days=30"}}
+        # self.d = {"ticker": {"symbol": ["S68.SI"]}}
 
         self.uri = urllib.urlencode(self.d)
         print "url: {}".format(self.uri)

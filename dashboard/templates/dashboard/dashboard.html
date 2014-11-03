@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load staticfiles %}
+{% load dashboard_tags %} 
 
 {% block head %}
 <!-- Custom styles for this template -->
@@ -10,11 +11,10 @@
 {% block navbar_control %}
     <ul class="nav navbar-nav navbar-right">
 
-        <!-- the '/' in front makes it an absolute path -->
-        <li><a href="{% url 'dashboard' %}?{{ encoded_query_string}}">Dashboard</a></li>
+        <li><a href="{% url 'dashboard' %}?{% encoded_query_str request %}">Dashboard</a></li>
     </ul>
     <form class="navbar-form navbar-right", method="post",
-        action={% url 'search' %}?{{ encoded_query_string}}> 
+        action={% url 'search' %}?{% encoded_query_str request %}> 
 
         {% csrf_token %}
         <input type="text" class="form-control" placeholder="Search...",
@@ -29,16 +29,8 @@
 <div class="container-fluid">
     <div class="row">
         
-        <!-- sidebar stats display -->
-        {% if app_sidebar %}
-            <div class="col-sm-3 col-md-2 sidebar">
-                    {% for app in app_sidebar %}
-                        {% if app.template_path %}
-                            {% include app.template_path with args=app.args %} 
-                        {% endif %}
-                    {% endfor %}
-            </div>
-        {% endif %}
+        <!-- the sidebar div is in dashboard-sidebar.html -->
+        {% include 'dashboard/dashboard-sidebar.html' with app_sidebar=app_sidebar %}
 
         <!-- main area display -->
         {% if app_main %}
@@ -65,4 +57,8 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block footer_block %}
+<script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}

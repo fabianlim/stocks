@@ -39,25 +39,7 @@ def zca_whitening(data_df,
                np.diag(1.0 / (np.sqrt(s) + np.spacing(1)))), v),
         columns=data_df.columns)
 
-import json
 from matplotlib.figure import Figure
-
-
-def match_results(procedure, params):
-    """ helper function to check if computation is already done """
-    # TODO : implement a generic template for multiple use
-    # cases
-    d = Data.objects.filter(procedure=procedure,
-                            parameters=json.dumps(params))
-    if not d:
-        print "no match for {}".format(params)
-        return False
-    else:
-        print "match"
-        return d.order_by('input_validity')[0]
-
-
-from models import Data
 from common.plots import axes_column_labeled
 
 
@@ -79,7 +61,7 @@ def draw_pca_figure(d,
         M = eigen_dirs.as_matrix()
         for i in xrange(3):
             # create axis
-            ax = fig.add_subplot(310 + i + 1, title='eigen directions')
+            ax = fig.add_subplot(310 + i + 1)
 
             # get axes
             if i is 2:
