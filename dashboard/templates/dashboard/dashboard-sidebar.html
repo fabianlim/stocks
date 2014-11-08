@@ -1,0 +1,8 @@
+<!-- code to populate sidebar -->
+{% if app_sidebar %}
+    {% for app in app_sidebar %}
+        {% if app.template_path %}
+            {% include app.template_path with args=app.args %} 
+        {% endif %}
+    {% endfor %}
+{% endif %}
