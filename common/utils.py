@@ -1,6 +1,8 @@
 import urlparse
 import json
 
+from django.http import QueryDict
+
 
 def decode_string_to_json(string):
     """ some strings use single quotes which mess up
@@ -14,7 +16,29 @@ def decode_string_to_json(string):
         return string
 
 
-from django.http import QueryDict
+# def merge_dict(dicta, b):
+#     if isinstance(b, list):
+#         dicta[key] += b
+#     if isinstance(b, dict):
+#         for key, val in b:
+#             if key not in dicta:
+#                 dicta[key] = b
+#             else:
+#                 merge_dict(dicta[key], val)
+#     else:
+#         dicta[key] = val
+#
+#
+# def decode_string_list_to_json(list_of_strings):
+#     """ decode a list of strings
+#         merging the dictionaries obtained
+#     """
+#     d = dict()
+#     for string in list_of_strings:
+#         import pdb
+#         pdb.set_trace()
+#         merge_dict(d, decode_string_to_json(string))
+#     return d
 
 
 def query_to_dict(query):
@@ -63,6 +87,7 @@ def get_df_from_json_response(request, half_uri):
     #                   "http://127.0.0.1:8000")
 
     # open url
+    # this should get a json response
     response = urllib2.urlopen(uri)
 
     # read the html body and return

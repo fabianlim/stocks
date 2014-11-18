@@ -16,14 +16,16 @@ cur_dir = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
 
 def sidebar(request):
 
-    """ view to get sidebar only """
+    """ returns the sidebar """
     # converts QueryDict to dict, QueryDict does not handle nesting
     # well
     qdict = query_to_dict(request.GET)
 
     context = {"app_sidebar": get_apps_from_qdict(qdict, 'sidebar')}
 
-    return render(request, cur_dir + '/dashboard-sidebar.html', context)
+    return render(request,
+                  cur_dir + '/dashboard-sidebar.html',
+                  context)
 
 
 def dashboard(request):

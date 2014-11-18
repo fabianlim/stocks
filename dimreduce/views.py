@@ -16,7 +16,8 @@ from django.core.cache import cache
 
 def pca(request,
         procedure_name="pca"):
-    """ view to process data and produce the dimension reduction
+    """
+        view to process data and produce the dimension reduction
         requires QueryDict to have the following keys
         figure:
         input:

@@ -9,18 +9,24 @@
 {% endblock head %}
 
 {% block navbar_control %}
-    <ul class="nav navbar-nav navbar-right">
-
-        <li><a href="{% url 'dashboard' %}?{% encoded_query_str request %}">Dashboard</a></li>
+    <ul class="nav navbar-nav navbar-right" role="tablist">
+        <!-- encoded query str returns the query string in encoded from -->
+        <li role="presentation" class="active"><a id="button-analyses-show" 
+            href="{% url 'dashboard' %}?{% encoded_query_str request %}">Dashboard</a></li>
+        <li role="presentation"><a href="#">Updates<span class="badge">3</span></a></li>
     </ul>
-    <form class="navbar-form navbar-right", method="post",
+
+    <form class="navbar-form navbar-right" method="post"
+        role="form"
         action={% url 'search' %}?{% encoded_query_str request %}> 
 
         {% csrf_token %}
-        <input type="text" class="form-control" placeholder="Search...",
-            value="{{ searchstr }}",
-            name="navbar-search-text",
-            id="navbar-search-text">
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search...",
+                value="{{ searchstr }}",
+                name="navbar-search-text",
+                id="navbar-search-text">
+        </div>
         <button type="submit" class="btn btn-primary">Go</button>
     </form>
 {% endblock %}
@@ -29,15 +35,20 @@
 <div class="container-fluid">
     <div class="row">
         
-        <!-- the sidebar div is in dashboard-sidebar.html -->
-        {% include 'dashboard/dashboard-sidebar.html' with app_sidebar=app_sidebar %}
+        <div class="col-sm-3 col-md-2 sidebar">
+            <!-- sidebar stats display -->
+            {% include 'dashboard/dashboard-sidebar.html' with app_sidebar=app_sidebar %}
+            <div id="sidebar-addition"> 
+                <!-- additions will populate here -->
+            </div>
+        </div>
 
         <!-- main area display -->
         {% if app_main %}
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     {% for app in app_main %}
                         {% if app.template_path %}
-                            {% include app.template_path with args=app.args %} 
+ -                           {% include app.template_path with args=app.args %} 
                         {% endif %}
                     {% endfor %}
             </div>

@@ -1,35 +1,50 @@
 
+<!-- Django does not have namespacing for tags -->
 {% load dashboard_tags %} 
+{% load ticker_tags %} 
 
-<h2 class="sub-header">Searching tickers ...</h2>
+<h3 class="sub-header">Searching tickers ...</h3>
+
 <div class="hero-unit">
-    {% for result in args.search_results %}
-        <li>
-            [{{ result.symbol }}]    
-            <em>
-                {% autoescape off %}
-                    {{ result.headline }} 
-                {% endautoescape %}
-            </em>
-            <strong> 
-                relevancy: {{ result.relevance }}
-            </strong>
-            </br>
-            Last Trade Price {{ result.quote.LastTradePriceOnly }} SGD, 
-            Last Trade Date {{ result.quote.LastTradeDate}},  
-            Last Trade Time {{ result.quote.LastTradeTime}},  
-            Volume {{ result.quote.Volume}},  
-
-            <button url="{% url_python "sidebar" %}"
-                    query-str="{% updated_query_str request "ticker" "symbol" result.symbol %}" 
-                    class="query-add btn btn-mini btn-info" type="button">
-                    Watch 
-            </button>
-
-            {% comment %}
-            <a href="{% url_python "sidebar" %}?{% updated_query_str request "ticker" "symbol" result.symbol %}">Watch</a>
-            {% new_query_button "ticker" "symbol" result.symbol %}
-            {% endcomment %}
-        </li>
-    {% endfor %}
+    <table class="table">
+        <thead>
+            <th>Symbol</th>
+            <th>Name, Industry</th>
+            <th>Volume</th>
+            <th>Price</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Relevancy</th>
+            <th>Button</th>
+        </thead>
+        <tbody>
+        {% for result in args.search_results %}
+            <tr>
+                <td>{{ result.symbol }} </td>
+                <td>
+                    {% autoescape off %}
+                        {{ result.headline }} 
+                    {% endautoescape %}
+                </td>
+                <td> {{ result.quote.Volume}} </td>
+                <td> {{ result.quote.LastTradePriceOnly }} </td>
+                <td> {{ result.quote.LastTradeDate}} </td>
+                <td> {{ result.quote.LastTradeTime}} </td>
+                <td> {{ result.relevance }} </td>
+                <td>
+                    <!-- do something about the color -->
+                    <!-- use url_python because cant seem to namespace
+                        dashboard from here -->
+                    <!-- data-add-query is set to a serialized json -->
+                    <button data-sidebar-url="{% url_python "sidebar" %}"
+                            data-add-query='{% ticker result.symbol  %}'
+                            class='query-add btn btn-mini {{result.watching | yesno:"btn-success,btn-primary"}}' type="button">
+                            Watch 
+                    </button>  
+                    
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>

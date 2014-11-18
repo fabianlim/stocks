@@ -6,7 +6,11 @@ cur_dir = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
 
 
 class DashboardRegistration(object):
-    """ to register to the dashboard """
+    """
+    to register to the dashboard.
+    params:
+        symbol: [ list of tickers ]
+    """
 
     @staticmethod
     def get_app_sidebar(params):
@@ -46,10 +50,8 @@ class DashboardRegistration(object):
         # put some quote information
         for r, q in zip(search_results, quotes):
             r.quote = q
+            r.watching = (r.symbol in params['symbol'])
 
         # return
-        # return {"template_path": cur_dir + "/ticker-search.html",
-        #         "args": {"search_results": search_results,
-        #                  "query_str": params['?eqstr']}}
         return {"template_path": cur_dir + "/ticker-search.html",
                 "args": {"search_results": search_results}}

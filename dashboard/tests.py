@@ -17,7 +17,7 @@ class TestURIDecoder(TestCase):
         self.d = {"ticker": {"symbol": ["S68.SI", "M30.SI"]},
                   "dimreduce": {"algo": "pca",
                                 "input": "/ticker/data/quote/?days=30"}}
-        # self.d = {"ticker": {"symbol": ["S68.SI"]}}
+        self.d = {"ticker": {"symbol": ["M30.SI"]}}
 
         self.uri = urllib.urlencode(self.d)
         print "url: {}".format(self.uri)

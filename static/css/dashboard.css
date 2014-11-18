@@ -103,3 +103,13 @@ body {
   display: inline-block;
   border-radius: 50%;
 }
+
+/* panels */
+.panel-heading span {
+    margin-top: -20px;
+    font-size: 15px;
+}
+.clickable {
+    cursor: pointer;
+}    
+/* .row { margin-top: 40px; padding: 0 10px; }  */

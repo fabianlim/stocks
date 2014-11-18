@@ -1,19 +1,33 @@
 <!-- info sidebar -->
 
 {% for tick, quote in args.ticker_quotes %}
-    <div class="well hero-unit">
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            {% if tick %}
+                Symbol: {{ tick.symbol }} </br>
+                Name: {{ tick.name }} 
+            {% endif %} 
+        </h3>
+        <span class="pull-right">
+            <i class="glyphicon clickable glyphicon-chevron-down panel-collapsed"></i>
+            <i class="glyphicon clickable glyphicon-minus-sign"></i>
+        </span>
+    </div>
+
+    <div class="panel-body collapse">
         {% if tick %}
-            Symbol: {{ tick.symbol }} </br>
-            Name: {{ tick.name }} </br>
             Industry: {{ tick.industry }} </br>
             Industry ID: {{ tick.industry_id }} </br>
         {% endif %} 
-
         {% if quote %}
             Last Trade Date: {{ quote.LastTradeDate }} </br>
             Last Trade Time: {{ quote.LastTradeTime }} </br>
-            Last Trade Price: {{ quote.LastTradePriceOnly }} SGD </br>
+            Last Trade Price: {{ quote.LastTradePriceOnly }} SGD 
         {% endif %} 
     </div>
-    </br>
+</div>
+
+
 {% endfor %}

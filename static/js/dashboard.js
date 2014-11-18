@@ -2,20 +2,16 @@ $(document).ready(function() {
 
     // JQuery code to be added in here.
 
-    //for the query-add button
-    // $('.query-add').click(function(){
-    //     var url = $(this).attr("url");
-    //     var query = $(this).attr("query-str");
-    //     var me = $(this);
-    //     $.get(url + "?" + query, function(data){
-    //         $('.sidebar').html(data);
-    //         // $('.go_button').html(data);
-    //         me.hide();
-    //     });
-    // });
-
-    // click event of query-add
+    // JS for adding a searched entry to sidebar
     $('.query-add').click(function(){
+        // var data = $.get("http://" + window.location.host + 
+        //     '/ticker/data/quote/', {days: 30}, 
+        //         function(data) {
+        //             console.log(data);
+        //         }, 
+        //         'json'
+        //     );
+
         // the href to display current state of dashboard
         var dash_href = $('#button-analyses-show').attr('href');
 
@@ -56,6 +52,27 @@ $(document).ready(function() {
                     me.removeClass("btn-success").addClass("btn-primary");
                 }
             });
+    });
+
+    // JS for collapsable panels in sidebar
+    $('.panel-heading span i.clickable').on("click", function () {
+        if ($(this).hasClass('glyphicon-chevron-down') ||
+            // for collapse
+            $(this).hasClass('glyphicon-chevron-up')) {
+
+            if ($(this).hasClass('glyphicon-chevron-down')) {
+                // collapsed case
+                $(this).parents('.panel').find('.panel-body').slideDown();
+                $(this).removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+            } else {
+                $(this).parents('.panel').find('.panel-body').slideUp();
+                $(this).removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+            }
+        } else if ($(this).hasClass('glyphicon-minus-sign')) {
+            // for closing
+            // TODO: SHow a modal to ask for confirmation to close
+            $(this).parents('.panel').remove();
+        }
     });
 });
 
