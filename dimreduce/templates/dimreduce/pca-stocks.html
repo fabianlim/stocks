@@ -1,0 +1,38 @@
+<div> 
+    <p>
+        Below shows a Principle Component Analysis (PCA) of SG 
+        Index stock quotes pulled from Yahoo. 
+        PCA computed for quotes pulled from the past 30 days.
+    </p>
+    <p>
+        Left graph plots std-deviation (i.e., singular value) of each
+        component.
+        Vertical axis given in log-scale. 
+        Click on dot to view features of component on the right graph.
+    </p>
+    <p>
+        Right graph is a radial bar chart that shows component features.
+        Features comprise mostly of fundementals.
+        Blue color means positive values, red means negative values.
+        Components are normalized, bar chart range is simply [0, 1].
+    </p>
+
+</div>
+
+<div id="chart"> 
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script> 
+    localStorage.setItem('pca',
+        JSON.stringify({
+            algo_url: '/dimreduce/data/pca',
+            input: "/ticker/data/quote/?days=30",
+            drop: ['ID', 'ticker_id', 'LastTradeDate'] 
+        }));
+
+    $.get('/dimreduce/pca', 
+        function(data) {
+            $('#chart').html(data);
+        });
+</script>

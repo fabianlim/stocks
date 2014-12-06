@@ -11,10 +11,15 @@ WHERE
 ticker_ticker.id = ticker_quote.ticker_id
 ;
 
+-- this restarts the sequence if we cannot DROP the table
+DELETE FROM ticker_quote;
+ALTER SEQUENCE ticker_quote_id_seq RESTART WITH 1;
+
+-- drop TABLE to start from scratch
 DROP TABLE t_ticker_quote;
 DROP SEQUENCE t_ticker_quote_id_seq;
 
--- this copies duplicates ticker_quote into t_ticker_quote
+-- this duplicates ticker_quote into t_ticker_quote
 CREATE TABLE t_ticker_quote (LIKE ticker_quote INCLUDING ALL);
 ALTER TABLE t_ticker_quote ALTER id DROP DEFAULT;
 CREATE SEQUENCE t_ticker_quote_id_seq;
@@ -23,15 +28,18 @@ SELECT setval('t_ticker_quote_id_seq', (SELECT max(id) FROM t_ticker_quote), tru
 ALTER TABLE t_ticker_quote ALTER id SET DEFAULT nextval('t_ticker_quote_id_seq');
 DELETE  FROM t_ticker_quote; -- clear table
 
--- this copies duplicates ticker_into a temporary table temp_table
+-- clear temp_table
 DROP TABLE temp_table;
 DROP SEQUENCE temp_table_id_seq;
+
+-- this copies duplicates ticker a temporary table temp_table
 CREATE TABLE temp_table (LIKE ticker_quote INCLUDING ALL);
 ALTER TABLE temp_table ALTER id DROP DEFAULT;
 CREATE SEQUENCE temp_table_id_seq;
 INSERT INTO temp_table SELECT * FROM ticker_quote;
 SELECT setval('temp_table_id_seq', (SELECT max(id) FROM temp_table), true);
 ALTER TABLE temp_table ALTER id SET DEFAULT nextval('temp_table_id_seq');
+
 DELETE FROM temp_table; -- clear table
 
 -- add in the columns it has less than the csv file
